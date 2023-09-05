@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "_@components/*": ["./src/components/*"]
+      "_@components/*": ["./src/components/*"],
+      "_@primitives/*": ["./src/primitives/*"]
     }
   }
 }

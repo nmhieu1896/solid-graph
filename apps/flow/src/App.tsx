@@ -1,21 +1,15 @@
-import { createSignal, type Component, Accessor, createEffect } from 'solid-js';
-import Canvas from '_@components/Canvas';
-
-type Translate = {
-  x: number;
-  y: number;
-};
+import Canvas from '_@components/canvas/index';
+import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
+import { Accessor, createEffect, type Component } from 'solid-js';
 
 const App: Component = () => {
-  const [translate, setTranslate] = createSignal({ x: 0, y: 0 });
-  const [scale, setScale] = createSignal(1, {
-    equals: (_, scale) => scale > 3 || scale < 0.15,
-  });
+  const [translate, setTranslate] = useTranslate;
+  const [scale, setScale] = useScale;
 
   createEffect(() => {
     window.addEventListener('wheel', (e) => {
       if (e.ctrlKey) {
-        setScale((scale) => scale - e.deltaY / 500);
+        setScale((scale) => scale - e.deltaY / 100);
       } else {
         setTranslate((translate) => ({
           x: translate.x - e.deltaX / 2,
@@ -25,7 +19,9 @@ const App: Component = () => {
     });
   });
 
+  // @ts-ignore
   window.translate = translate;
+  // @ts-ignore
   window.scale = scale;
 
   return (
@@ -47,7 +43,7 @@ const App: Component = () => {
         }}
       ></div> */}
 
-      <Canvas scale={scale} translate={translate} />
+      <Canvas />
 
       <div class="fixed bottom-2 left-2 border-2 border-green-500 grid gap-4">
         <button
