@@ -9,11 +9,11 @@ const App: Component = () => {
   createEffect(() => {
     window.addEventListener('wheel', (e) => {
       if (e.ctrlKey) {
-        setScale((scale) => scale - e.deltaY / 100);
+        setScale((scale) => scale - e.deltaY / 150);
       } else {
         setTranslate((translate) => ({
-          x: translate.x - e.deltaX / 2,
-          y: translate.y - e.deltaY / 2,
+          x: translate.x - e.deltaX / 1.2,
+          y: translate.y - e.deltaY / 1.2,
         }));
       }
     });
