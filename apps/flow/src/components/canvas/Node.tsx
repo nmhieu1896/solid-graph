@@ -37,7 +37,7 @@ export default function Node({ node, setNode }: NodeProps) {
         node.element = el;
         ref = el;
       }}
-      class="border border-red-500 absolute py-4 px-8 cursor-pointer"
+      class="border box-border border-red-500 absolute py-4 px-8 cursor-pointer"
       style={{ transform: `translate(${node.pos.x}px, ${node.pos.y}px)` }}
       onMouseDown={(e) => {
         console.log('MOUSE DOWN');
@@ -51,7 +51,7 @@ export default function Node({ node, setNode }: NodeProps) {
 
       {/* Edge dragger */}
       {Object.values(pointMapperClass).map((v) => (
-        <div class={`${v} absolute w-2 h-3  cursor-grab `} style={{ transform: `translate(-50%, -50%)` }} />
+        <div class={`${v}  absolute w-4 h-6  cursor-grab `} style={{ transform: `translate(-50%, -50%)` }} />
       ))}
     </div>
   );
@@ -59,7 +59,7 @@ export default function Node({ node, setNode }: NodeProps) {
 
 const pointMapperClass = {
   // top: 'edge-dragger-t top-0 left-[50%]',
-  right: 'edge-dragger-out top-[50%] left-[100%] bg-green-500 clip-path-arrow-right',
+  right: 'edge-dragger-out top-[50%] left-[calc(100%_+_3px)] bg-green-500 clip-path-arrow-right',
   // bottom: 'edge-dragger-b top-[100%] left-[50%]',
   left: 'edge-dragger-in top-[50%] left-0 bg-red-500  clip-path-arrow-right',
 };

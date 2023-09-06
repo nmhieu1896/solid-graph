@@ -33,15 +33,6 @@ const App: Component = () => {
       class="h-[100vh] w-[100vw] absolute overflow-hidden"
     >
       <Background scale={scale} translate={translate} />
-      {/* <div
-        class="w-4 h-4 bg-red-500 rounded-full bg-red absolute top-0 left-0"
-        style={{
-          transform: `translate(${translate().x}px, ${
-            translate().y
-          }px) scale(${scale()})`,
-          'transform-origin': '0 0 ',
-        }}
-      ></div> */}
 
       <Canvas />
 

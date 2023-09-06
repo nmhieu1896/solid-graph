@@ -1,17 +1,22 @@
 import { createEffect, createSignal } from 'solid-js';
 
+export type Point = {
+  x: number;
+  y: number;
+};
+
 export type NodeInfo = {
   id: string;
-  pos: { x: number; y: number };
+  pos: Point;
   title?: string;
   element?: HTMLDivElement;
 };
 
 const useNodes = createSignal<NodeInfo[]>([
   { id: '1', pos: { x: 0, y: 0 }, title: 'Node 1' },
-  { id: '2', pos: { x: 200, y: 100 }, title: 'Node 2' },
+  { id: '2', pos: { x: 250, y: 100 }, title: 'Node 2' },
   { id: '3', pos: { x: 500, y: -100 }, title: 'Node 3' },
-  { id: '4', pos: { x: 400, y: 300 }, title: 'Node 4' },
+  { id: '4', pos: { x: 600, y: 300 }, title: 'Node 4' },
 ]);
 const [nodes] = useNodes;
 
