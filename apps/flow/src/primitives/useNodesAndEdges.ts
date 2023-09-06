@@ -21,10 +21,13 @@ const useNodes = createSignal<NodeInfo[]>([
 ]);
 const [nodes] = useNodes;
 
-const useEdges = createSignal<Record<string, string[]>>({
-  '1': ['2', '3'],
-  '2': ['4'],
-});
+const useEdges = createSignal<Record<string, string[]>>(
+  {
+    '1': ['2', '3'],
+    '2': ['4'],
+  },
+  { equals: false }
+);
 
 export { useNodes, useEdges };
 
