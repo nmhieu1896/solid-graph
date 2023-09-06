@@ -12,7 +12,8 @@ export type NodeInfo = {
   element?: HTMLDivElement;
 };
 
-const useNodes = createSignal<NodeInfo[]>([
+//----------- Node And Edge-------------
+export const useNodes = createSignal<NodeInfo[]>([
   { id: '1', pos: { x: 0, y: 0 }, title: 'Node 1' },
   { id: '2', pos: { x: 250, y: 100 }, title: 'Node 2' },
   { id: '3', pos: { x: 500, y: -100 }, title: 'Node 3' },
@@ -21,7 +22,7 @@ const useNodes = createSignal<NodeInfo[]>([
 ]);
 const [nodes] = useNodes;
 
-const useEdges = createSignal<Record<string, string[]>>(
+export const useEdges = createSignal<Record<string, string[]>>(
   {
     '1': ['2', '3'],
     '2': ['4'],
@@ -30,12 +31,11 @@ const useEdges = createSignal<Record<string, string[]>>(
 );
 const [edges, setEdges] = useEdges;
 
-export { useNodes, useEdges };
-
 export const useNodeMapper = createSignal<Record<string, NodeInfo>>({});
 const [nodeMapper, setNodeMapper] = useNodeMapper;
-export { nodeMapper, setNodeMapper };
+//----------- END OF Node And Edge-------------
 
+//Sync node to Node Mapper
 createEffect(() => {
   nodes().forEach((node) => {
     nodeMapper[node.id] = node;
@@ -43,12 +43,10 @@ createEffect(() => {
   setNodeMapper({ ...nodeMapper });
 });
 
-//Start dragging to create an edge
+//------------ Edge creation------------
 const [edgeSrc, setEdgeSrc] = createSignal<string>();
 const [mousePos, setMousePos] = createSignal<Point>();
 export { edgeSrc, mousePos };
-
-// Edge creation
 {
   document.addEventListener('mousedown', (e) => {
     const target = e.target;
@@ -85,4 +83,4 @@ export { edgeSrc, mousePos };
     setMousePos({ x: e.clientX, y: e.clientY });
   });
 }
-// End of Edge creation
+// -------- End of Edge creation---------

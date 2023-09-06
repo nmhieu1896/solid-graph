@@ -1,4 +1,12 @@
-import { NodeInfo, edgeSrc, mousePos, nodeMapper, useEdges, useNodes, type Point } from '_@primitives/useNodesAndEdges';
+import {
+  NodeInfo,
+  edgeSrc,
+  mousePos,
+  useNodeMapper,
+  useEdges,
+  useNodes,
+  type Point,
+} from '_@primitives/useNodesAndEdges';
 import { convertSvgPos, useScale, useTranslate } from '_@primitives/useTransform';
 import { For, Show, onMount } from 'solid-js';
 
@@ -8,6 +16,7 @@ const [, setNodes] = useNodes;
 const [edges, setEdges] = useEdges;
 
 export default function EdgesCanvas() {
+  const [nodeMapper] = useNodeMapper;
   onMount(() => {
     setNodes((nodes) => [...nodes]);
   });
