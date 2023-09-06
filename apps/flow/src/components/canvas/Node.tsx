@@ -1,5 +1,5 @@
 import { Point, edgeSrc, type NodeInfo } from '_@primitives/useNodesAndEdges';
-import { useScale, useTranslate } from '_@primitives/useTransform';
+import { useScale, useTranslate, calibPosition } from '_@primitives/useTransform';
 import { createSignal, onMount } from 'solid-js';
 
 type NodeProps = {
@@ -73,9 +73,8 @@ export default function Node({ node, setNode }: NodeProps) {
 }
 
 function getTransform(nodePos: Point) {
-  return `translate(${nodePos.x * scale() + translate().x}px, ${
-    nodePos.y * scale() + translate().y
-  }px) scale(${scale()})`;
+  const pos = calibPosition(nodePos);
+  return `translate(${pos.x}px, ${pos.y}px) scale(${scale()})`;
 }
 
 const pointMapperClass = {

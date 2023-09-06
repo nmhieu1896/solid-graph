@@ -2,15 +2,14 @@ import {
   NodeInfo,
   edgeSrc,
   mousePos,
-  useNodeMapper,
   useEdges,
+  useNodeMapper,
   useNodes,
   type Point,
 } from '_@primitives/useNodesAndEdges';
-import { convertSvgPos, useScale, useTranslate } from '_@primitives/useTransform';
+import { calibPosition, useScale } from '_@primitives/useTransform';
 import { For, Show, onMount } from 'solid-js';
 
-const [translate] = useTranslate;
 const [scale] = useScale;
 const [, setNodes] = useNodes;
 const [edges, setEdges] = useEdges;
@@ -36,19 +35,15 @@ export default function EdgesCanvas() {
           {(fromNodeId) => (
             <For each={edges()[fromNodeId]}>
               {(toNodeId) => {
+                // 2 Nodes to create an Edge
                 const fromNode = () => nodeMapper()[fromNodeId];
                 const toNode = () => nodeMapper()[toNodeId];
+                // 2 Nodes's output/input Position for creating edge
                 const outPos = () => getElementPos(fromNode(), 'out');
                 const inPos = () => getElementPos(toNode(), 'in');
-                const fromInSvg = () => ({
-                  x: outPos().x * scale() + translate().x,
-                  y: outPos().y * scale() + translate().y,
-                });
-                const toInSvg = () => ({
-                  x: inPos().x * scale() + translate().x,
-                  y: inPos().y * scale() + translate().y,
-                });
-
+                // 2 Nodes Position in SVG After translation and scaling and it's center for deletion
+                const fromInSvg = () => calibPosition(outPos());
+                const toInSvg = () => calibPosition(inPos());
                 const center = () => ({ x: (fromInSvg().x + toInSvg().x) / 2, y: (fromInSvg().y + toInSvg().y) / 2 });
 
                 return (
@@ -79,11 +74,9 @@ export default function EdgesCanvas() {
         </For>
         <Show when={edgeSrc() && mousePos()}>
           <path
-            d={`M${convertSvgPos(getElementPos(nodeMapper()[edgeSrc()], 'out'))}
-              L${mousePos().x} ${mousePos().y} `}
+            class="stroke-slate-400 pointer-events-none stroke-2 transition-[stroke-width,_stroke]"
+            d={convertLineToSpline(calibPosition(getElementPos(nodeMapper()[edgeSrc()], 'out')), mousePos())}
             fill="none"
-            stroke="#a16207"
-            stroke-width="2"
           />
         </Show>
       </svg>
@@ -93,7 +86,7 @@ export default function EdgesCanvas() {
 
 const getElementPos = (node: NodeInfo, type: 'in' | 'out') => {
   const element = node.element;
-  if (!element || !element?.style || !element?.style?.transform) return { x: 0, y: 0 };
+  if (!element || !element?.offsetWidth) return { x: 0, y: 0 };
 
   return {
     x: type === 'out' ? node.pos.x + element.offsetWidth : node.pos.x,
