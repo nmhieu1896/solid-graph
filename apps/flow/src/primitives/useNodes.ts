@@ -17,6 +17,7 @@ const useNodes = createSignal<NodeInfo[]>([
   { id: '2', pos: { x: 250, y: 100 }, title: 'Node 2' },
   { id: '3', pos: { x: 500, y: -100 }, title: 'Node 3' },
   { id: '4', pos: { x: 600, y: 300 }, title: 'Node 4' },
+  { id: '5', pos: { x: 300, y: 300 }, title: 'Node 5' },
 ]);
 const [nodes] = useNodes;
 

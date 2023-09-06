@@ -1,11 +1,45 @@
 import { nodeMapper, useEdges, useNodes, type Point } from '_@primitives/useNodes';
-import { useScale, useTranslate } from '_@primitives/useTransform';
-import { For, onMount } from 'solid-js';
+import { useScale, useTranslate, convertSvgPos } from '_@primitives/useTransform';
+import { For, Show, createEffect, createSignal, onMount } from 'solid-js';
 
 const [translate] = useTranslate;
 const [scale] = useScale;
 const [, setNodes] = useNodes;
-const [edges] = useEdges;
+const [edges, setEdges] = useEdges;
+
+const [fromId, setFromId] = createSignal<string>();
+const [mousePos, setMousePos] = createSignal<Point>();
+
+document.addEventListener('mousedown', (e) => {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+  if (target.classList.contains('edge-dragger-out')) {
+    setFromId(target.parentElement.dataset.nodeId);
+  }
+});
+
+document.addEventListener('mouseup', (e) => {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return;
+  const nodeId = target?.dataset?.nodeId || target?.parentElement?.dataset?.nodeId;
+  if (nodeId && fromId()) {
+    const currentFromId = edges()[fromId()];
+    if (!currentFromId) {
+      edges()[fromId()] = [nodeId];
+    } else if (!currentFromId.includes(nodeId)) {
+      edges()[fromId()].push(nodeId);
+    }
+    setEdges({ ...edges() });
+  }
+  setFromId(undefined);
+  setMousePos(undefined);
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!fromId()) return;
+  setMousePos({ x: e.clientX, y: e.clientY });
+});
+
 export default function EdgesCanvas() {
   onMount(() => {
     setNodes((nodes) => [...nodes]);
@@ -27,6 +61,15 @@ export default function EdgesCanvas() {
           </For>
         )}
       </For>
+      <Show when={fromId() && mousePos()}>
+        <path
+          d={`M${convertSvgPos(getElementPos(nodeMapper()[fromId()].element, 'out'))}
+              L${mousePos().x} ${mousePos().y} `}
+          fill="none"
+          stroke="#a16207"
+          stroke-width="2"
+        />
+      </Show>
     </svg>
   );
 }

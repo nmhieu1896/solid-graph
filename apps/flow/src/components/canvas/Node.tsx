@@ -1,6 +1,7 @@
 import { useScale, useTranslate } from '_@primitives/useTransform';
 import { createSignal, onMount } from 'solid-js';
 import { type NodeInfo } from '_@primitives/useNodes';
+import { isMouseDown } from '_@primitives/createOnMouseDown';
 
 type NodeProps = {
   node: NodeInfo;
@@ -11,6 +12,7 @@ export default function Node({ node, setNode }: NodeProps) {
   const [translate] = useTranslate;
   const [scale] = useScale;
   const [dragPos, setDragPos] = createSignal<{ x: number; y: number }>();
+  const [droppable, setDroppable] = createSignal(false);
   let ref: HTMLDivElement;
 
   onMount(() => {
@@ -27,6 +29,7 @@ export default function Node({ node, setNode }: NodeProps) {
     document.addEventListener('mouseup', () => {
       if (!dragPos()) return;
       setDragPos(undefined);
+      setDroppable(false);
       console.log('stop dragging');
     });
   });
@@ -37,12 +40,23 @@ export default function Node({ node, setNode }: NodeProps) {
         node.element = el;
         ref = el;
       }}
-      class="border box-border border-red-500 absolute py-4 px-8 cursor-pointer"
+      classList={{
+        'border box-border absolute py-4 px-8': true,
+        'border-red-500 cursor-pointer': !droppable(),
+        'border-green-500 cursor-move': droppable(),
+      }}
       style={{ transform: `translate(${node.pos.x}px, ${node.pos.y}px)` }}
       onMouseDown={(e) => {
         console.log('MOUSE DOWN');
         if (e.target === ref) setDragPos({ x: e.offsetX * scale(), y: e.offsetY * scale() });
       }}
+      onMouseOver={() => {
+        if (isMouseDown()) setDroppable(true);
+      }}
+      onMouseLeave={() => {
+        setDroppable(false);
+      }}
+      data-node-id={node.id}
       // onMouseUp={(e) => {
       //   console.log('UP ON', e.target);
       // }}
