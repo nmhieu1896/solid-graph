@@ -28,6 +28,7 @@ const useEdges = createSignal<Record<string, string[]>>(
   },
   { equals: false }
 );
+const [edges, setEdges] = useEdges;
 
 export { useNodes, useEdges };
 
@@ -41,3 +42,47 @@ createEffect(() => {
   });
   setNodeMapper({ ...nodeMapper });
 });
+
+//Start dragging to create an edge
+const [edgeSrc, setEdgeSrc] = createSignal<string>();
+const [mousePos, setMousePos] = createSignal<Point>();
+export { edgeSrc, mousePos };
+
+// Edge creation
+{
+  document.addEventListener('mousedown', (e) => {
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.classList.contains('edge-dragger-out')) {
+      setEdgeSrc(target.parentElement.dataset.nodeId);
+    }
+  });
+
+  document.addEventListener('mouseup', (e) => {
+    const target = e.target;
+    queueMicrotask(() => {
+      //Defer
+      setEdgeSrc(undefined);
+      setMousePos(undefined);
+    });
+    if (!(target instanceof HTMLElement)) return;
+
+    const nodeId = target?.dataset?.nodeId || target?.parentElement?.dataset?.nodeId;
+    if (nodeId && edgeSrc()) {
+      const newEdges = edges();
+      const currentFromId = newEdges[edgeSrc()];
+      if (!currentFromId) {
+        newEdges[edgeSrc()] = [nodeId];
+      } else if (!currentFromId.includes(nodeId)) {
+        currentFromId.push(nodeId);
+      }
+      setEdges(newEdges);
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!edgeSrc()) return;
+    setMousePos({ x: e.clientX, y: e.clientY });
+  });
+}
+// End of Edge creation

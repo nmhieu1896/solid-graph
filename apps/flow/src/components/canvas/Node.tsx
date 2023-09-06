@@ -1,7 +1,6 @@
+import { Point, edgeSrc, type NodeInfo } from '_@primitives/useNodesAndEdges';
 import { useScale, useTranslate } from '_@primitives/useTransform';
 import { createSignal, onMount } from 'solid-js';
-import { Point, type NodeInfo } from '_@primitives/useNodesAndEdges';
-import { isMouseDown } from '_@primitives/createOnMouseDown';
 
 type NodeProps = {
   node: NodeInfo;
@@ -12,7 +11,7 @@ const [translate] = useTranslate;
 const [scale] = useScale;
 export default function Node({ node, setNode }: NodeProps) {
   const [dragPos, setDragPos] = createSignal<{ x: number; y: number }>();
-  const [droppable, setDroppable] = createSignal(false);
+  const [droppable, setDroppable] = createSignal(false); // Droppable is for creating edges
   let ref: HTMLDivElement;
 
   onMount(() => {
@@ -53,7 +52,7 @@ export default function Node({ node, setNode }: NodeProps) {
         if (e.target === ref) setDragPos({ x: e.offsetX * scale(), y: e.offsetY * scale() });
       }}
       onMouseOver={() => {
-        if (isMouseDown()) setDroppable(true);
+        if (edgeSrc()) setDroppable(true);
       }}
       onMouseLeave={() => {
         setDroppable(false);
