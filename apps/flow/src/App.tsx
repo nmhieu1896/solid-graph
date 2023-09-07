@@ -9,7 +9,23 @@ const App: Component = () => {
   createEffect(() => {
     window.addEventListener('wheel', (e) => {
       if (e.ctrlKey) {
-        setScale((scale) => scale - e.deltaY / 150);
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        const currentTranslateX = translate().x;
+        const currentTranslateY = translate().y;
+
+        const currentScale = scale();
+
+        const newScale = currentScale - e.deltaY / 150;
+
+        //newScale outside the threshold will give high errors
+        if (newScale > 0.2 && newScale < 3) {
+          const newTranslateX = mouseX - (mouseX - currentTranslateX) * (newScale / currentScale);
+          const newTranslateY = mouseY - (mouseY - currentTranslateY) * (newScale / currentScale);
+          setTranslate({ x: newTranslateX, y: newTranslateY });
+          setScale(newScale);
+        }
       } else {
         setTranslate((translate) => ({
           x: translate.x - e.deltaX / 1.2,
