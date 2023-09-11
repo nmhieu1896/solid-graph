@@ -1,5 +1,6 @@
 import Canvas from '_@components/canvas/index';
 import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
+import { addNodes } from '_@primitives/useNodesAndEdges';
 import { Accessor, createEffect, type Component } from 'solid-js';
 
 const App: Component = () => {
@@ -53,6 +54,7 @@ const App: Component = () => {
       <Canvas />
 
       <div class="fixed bottom-2 left-2 border-2 border-green-500 grid gap-4">
+        <button onClick={addNodes}>Add Node</button>
         <button
           onclick={() => {
             setScale((scale) => scale + 0.1);

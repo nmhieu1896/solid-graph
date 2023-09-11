@@ -13,6 +13,6 @@ const [translate] = useTranslate;
 const [scale] = useScale;
 
 //Update Node/edges position after translating and Scaling
-export const calibPosition = (svgPos: { x: number; y: number }) => {
-  return { x: svgPos.x * scale() + translate().x, y: svgPos.y * scale() + translate().y };
+export const calibPosition = (absolutePos: { x: number; y: number }) => {
+  return { x: absolutePos.x * scale() + translate().x, y: absolutePos.y * scale() + translate().y };
 };

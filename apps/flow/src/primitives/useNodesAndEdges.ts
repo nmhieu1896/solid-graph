@@ -1,26 +1,35 @@
 import { createEffect, createSignal } from 'solid-js';
+import { useTranslate } from './useTransform';
+import { BaseNode } from '_@models/nodeModel';
+
+const [translate] = useTranslate;
 
 export type Point = {
   x: number;
   y: number;
 };
 
-export type NodeInfo = {
-  id: string;
-  pos: Point;
-  title?: string;
-  element?: HTMLDivElement;
-};
-
 //----------- Node And Edge-------------
-export const useNodes = createSignal<NodeInfo[]>([
-  { id: '1', pos: { x: 0, y: 0 }, title: 'Node 1' },
-  { id: '2', pos: { x: 250, y: 100 }, title: 'Node 2' },
-  { id: '3', pos: { x: 500, y: -100 }, title: 'Node 3' },
-  { id: '4', pos: { x: 600, y: 300 }, title: 'Node 4' },
-  { id: '5', pos: { x: 300, y: 300 }, title: 'Node 5' },
+export const useNodes = createSignal<BaseNode[]>([
+  new BaseNode({ id: '1', pos: { x: 0, y: 0 }, title: 'Node 1' }),
+  new BaseNode({ id: '2', pos: { x: 250, y: 100 }, title: 'Node 2' }),
+  new BaseNode({ id: '3', pos: { x: 500, y: -100 }, title: 'Node 3' }),
+  new BaseNode({ id: '4', pos: { x: 600, y: 300 }, title: 'Node 4' }),
+  new BaseNode({ id: '5', pos: { x: 300, y: 300 }, title: 'Node 5' }),
 ]);
-const [nodes] = useNodes;
+const [nodes, setNodes] = useNodes;
+
+export const addNodes = () => {
+  const id = Date.now().toString(36);
+  setNodes((nodes) => [
+    ...nodes,
+    new BaseNode({
+      id,
+      pos: { x: -translate().x + 200 * Math.random(), y: -translate().y + 200 * Math.random() },
+      title: `Node ${id}`,
+    }),
+  ]);
+};
 
 export const useEdges = createSignal<Record<string, string[]>>(
   {
@@ -31,7 +40,7 @@ export const useEdges = createSignal<Record<string, string[]>>(
 );
 const [edges, setEdges] = useEdges;
 
-export const useNodeMapper = createSignal<Record<string, NodeInfo>>({});
+export const useNodeMapper = createSignal<Record<string, BaseNode>>({});
 const [nodeMapper, setNodeMapper] = useNodeMapper;
 //----------- END OF Node And Edge-------------
 
@@ -46,7 +55,9 @@ createEffect(() => {
 //------------ Edge creation------------
 const [edgeSrc, setEdgeSrc] = createSignal<string>();
 const [mousePos, setMousePos] = createSignal<Point>();
-export { edgeSrc, mousePos };
+const allowEdgeCreation = (targetNodeId) => edgeSrc() && targetNodeId && edgeSrc() !== targetNodeId;
+export { allowEdgeCreation, edgeSrc, mousePos };
+
 {
   document.addEventListener('mousedown', (e) => {
     const target = e.target;
@@ -66,7 +77,7 @@ export { edgeSrc, mousePos };
     if (!(target instanceof HTMLElement)) return;
 
     const nodeId = target?.dataset?.nodeId || target?.parentElement?.dataset?.nodeId;
-    if (nodeId && edgeSrc()) {
+    if (allowEdgeCreation(nodeId)) {
       const newEdges = edges();
       const currentFromId = newEdges[edgeSrc()];
       if (!currentFromId) {

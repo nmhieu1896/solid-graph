@@ -1,12 +1,5 @@
-import {
-  NodeInfo,
-  edgeSrc,
-  mousePos,
-  useEdges,
-  useNodeMapper,
-  useNodes,
-  type Point,
-} from '_@primitives/useNodesAndEdges';
+import { BaseNode } from '_@models/nodeModel';
+import { edgeSrc, mousePos, useEdges, useNodeMapper, useNodes, type Point } from '_@primitives/useNodesAndEdges';
 import { calibPosition, useScale } from '_@primitives/useTransform';
 import { For, Show, onMount } from 'solid-js';
 
@@ -36,11 +29,11 @@ export default function EdgesCanvas() {
             <For each={edges()[fromNodeId]}>
               {(toNodeId) => {
                 // 2 Nodes to create an Edge
-                const fromNode = () => nodeMapper()[fromNodeId];
-                const toNode = () => nodeMapper()[toNodeId];
+                const fromNode = nodeMapper()[fromNodeId];
+                const toNode = nodeMapper()[toNodeId];
                 // 2 Nodes's output/input Position for creating edge
-                const outPos = () => getElementPos(fromNode(), 'out');
-                const inPos = () => getElementPos(toNode(), 'in');
+                const outPos = () => getElementPos(fromNode, 'out');
+                const inPos = () => getElementPos(toNode, 'in');
                 // 2 Nodes Position in SVG After translation and scaling and it's center for deletion
                 const fromInSvg = () => calibPosition(outPos());
                 const toInSvg = () => calibPosition(inPos());
@@ -84,7 +77,7 @@ export default function EdgesCanvas() {
   );
 }
 
-const getElementPos = (node: NodeInfo, type: 'in' | 'out') => {
+const getElementPos = (node: BaseNode, type: 'in' | 'out') => {
   const element = node.element;
   if (!element || !element?.offsetWidth) return { x: 0, y: 0 };
 

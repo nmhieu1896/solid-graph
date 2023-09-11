@@ -21,6 +21,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '_@components': join(__dirname, './src/components'),
+      '_@models': join(__dirname, './src/models'),
       '_@primitives': join(__dirname, './src/primitives'),
     },
   },
