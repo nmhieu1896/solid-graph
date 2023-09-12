@@ -5,3 +5,11 @@
 .clip-path-arrow-right {
   clip-path: polygon(0 0, 0% 100%, 100% 50%);
 }
+
+input {
+  @apply border border-slate-800 p-2;
+}
+
+button {
+  @apply border border-slate-700 py-2;
+}

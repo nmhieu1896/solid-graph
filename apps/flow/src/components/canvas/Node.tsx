@@ -47,7 +47,6 @@ export default function Node({ node }: NodeProps) {
         }}
         ondblclick={onToggle(true)}
         classList={{
-          // 'isolate z-20': true,
           'border box-border absolute py-4 px-8': true,
           'border-red-500 cursor-pointer': !droppable(),
           'border-green-500 cursor-move': droppable(),
@@ -66,11 +65,12 @@ export default function Node({ node }: NodeProps) {
           setDroppable(false);
         }}
         data-node-id={node.id}
-        // onMouseUp={(e) => {
-        //   console.log('UP ON', e.target);
-        // }}
       >
-        <p class="select-none pointer-events-none">{node.title || 'Node Title'}</p>
+        <div class="select-none pointer-events-none">
+          <p>id: {node.id}</p>
+          <p>Title: {node.title}</p>
+          <p>Type: {node.type}</p>
+        </div>
 
         {/* Edge dragger */}
         {Object.values(pointMapperClass).map((v) => (
@@ -79,10 +79,7 @@ export default function Node({ node }: NodeProps) {
       </div>
 
       <SlideOver open={open} onClose={onToggle(false)}>
-        <div>
-          <h3>THIS IS A SLIDE OVER</h3>
-          <node.SliderRightForm self={node} onSubmit={onToggle(false)} />
-        </div>
+        <node.SliderRightForm self={node} onSubmit={onToggle(false)} />
       </SlideOver>
     </>
   );
