@@ -1,11 +1,12 @@
-import { BaseNode } from '_@models/nodeModel';
-import { edgeSrc, mousePos, useEdges, useNodeMapper, useNodes, type Point } from '_@primitives/useNodesAndEdges';
+import { INode } from '_@models/BaseNode';
+import { edge } from '_@primitives/useEdges';
+import { useNodeMapper, useNodes, type Point } from '_@primitives/useNodes';
+
 import { calibPosition, useScale } from '_@primitives/useTransform';
 import { For, Show, onMount } from 'solid-js';
 
 const [scale] = useScale;
 const [, setNodes] = useNodes;
-const [edges, setEdges] = useEdges;
 
 export default function EdgesCanvas() {
   const [nodeMapper] = useNodeMapper;
@@ -14,19 +15,15 @@ export default function EdgesCanvas() {
   });
 
   const onDeleteEdge = (fromId: string, toId: string) => () => {
-    const currentFromId = edges()[fromId];
-    if (!currentFromId) return;
-    const newEdges = edges();
-    newEdges[fromId] = currentFromId.filter((id) => id !== toId);
-    setEdges(newEdges);
+    edge.deleteEdge(fromId, toId);
   };
 
   return (
     <>
       <svg class="absolute left-0 top-0 w-full h-full " xmlns="http://www.w3.org/2000/svg">
-        <For each={Object.keys(edges())}>
+        <For each={Object.keys(edge.edges)}>
           {(fromNodeId) => (
-            <For each={edges()[fromNodeId]}>
+            <For each={edge.edges[fromNodeId]}>
               {(toNodeId) => {
                 // 2 Nodes to create an Edge
                 const fromNode = nodeMapper()[fromNodeId];
@@ -65,10 +62,10 @@ export default function EdgesCanvas() {
             </For>
           )}
         </For>
-        <Show when={edgeSrc() && mousePos()}>
+        <Show when={edge.edgeSrc && edge.mousePos}>
           <path
             class="stroke-slate-400 pointer-events-none stroke-2 transition-[stroke-width,_stroke]"
-            d={convertLineToSpline(calibPosition(getElementPos(nodeMapper()[edgeSrc()], 'out')), mousePos())}
+            d={convertLineToSpline(calibPosition(getElementPos(nodeMapper()[edge.edgeSrc], 'out')), edge.mousePos)}
             fill="none"
           />
         </Show>
@@ -77,7 +74,7 @@ export default function EdgesCanvas() {
   );
 }
 
-const getElementPos = (node: BaseNode, type: 'in' | 'out') => {
+const getElementPos = (node: INode, type: 'in' | 'out') => {
   const element = node.element;
   if (!element || !element?.offsetWidth) return { x: 0, y: 0 };
 

@@ -1,11 +1,12 @@
-import { Point, allowEdgeCreation } from '_@primitives/useNodesAndEdges';
+import { Point } from '_@primitives/useNodes';
 import { useScale, useTranslate, calibPosition } from '_@primitives/useTransform';
 import { createSignal, onMount } from 'solid-js';
 import SlideOver from '_@components/modals/SlideOver';
-import { BaseNode } from '_@models/nodeModel';
+import { INode } from '_@models/BaseNode';
+import { edge } from '_@primitives/useEdges';
 
 type NodeProps = {
-  node: BaseNode;
+  node: INode;
 };
 
 const [translate] = useTranslate;
@@ -15,6 +16,10 @@ export default function Node({ node }: NodeProps) {
   const [droppable, setDroppable] = createSignal(false); // Droppable is for creating edges
   const [open, setOpen] = createSignal(false);
   let ref: HTMLDivElement;
+
+  const onToggle = (isOpen: boolean) => () => {
+    setOpen(isOpen);
+  };
 
   onMount(() => {
     document.addEventListener('mousemove', (e) => {
@@ -40,9 +45,7 @@ export default function Node({ node }: NodeProps) {
           node.element = el;
           ref = el;
         }}
-        ondblclick={() => {
-          setOpen(true);
-        }}
+        ondblclick={onToggle(true)}
         classList={{
           // 'isolate z-20': true,
           'border box-border absolute py-4 px-8': true,
@@ -57,7 +60,7 @@ export default function Node({ node }: NodeProps) {
           if (e.target === ref) setDragPos({ x: e.offsetX * scale(), y: e.offsetY * scale() });
         }}
         onMouseOver={() => {
-          if (allowEdgeCreation(node.id)) setDroppable(true);
+          if (edge.allowEdgeCreation(node.id)) setDroppable(true);
         }}
         onMouseLeave={() => {
           setDroppable(false);
@@ -75,9 +78,10 @@ export default function Node({ node }: NodeProps) {
         ))}
       </div>
 
-      <SlideOver open={open} onClose={() => setOpen(false)}>
+      <SlideOver open={open} onClose={onToggle(false)}>
         <div>
           <h3>THIS IS A SLIDE OVER</h3>
+          <node.SliderRightForm self={node} onSubmit={onToggle(false)} />
         </div>
       </SlideOver>
     </>

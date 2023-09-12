@@ -1,4 +1,4 @@
-import { useNodes } from '_@primitives/useNodesAndEdges';
+import { useNodes } from '_@primitives/useNodes';
 import { For } from 'solid-js';
 import EdgesCanvas from './Edge';
 import Node from './Node';

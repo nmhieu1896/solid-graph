@@ -1,6 +1,6 @@
 import Canvas from '_@components/canvas/index';
 import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
-import { addNodes } from '_@primitives/useNodesAndEdges';
+import { addNodes } from '_@primitives/useNodes';
 import { Accessor, createEffect, type Component } from 'solid-js';
 
 const App: Component = () => {
