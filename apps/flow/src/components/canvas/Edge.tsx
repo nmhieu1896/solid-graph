@@ -1,18 +1,14 @@
 import { INode } from '_@models/BaseNode';
 import { edge } from '_@primitives/useEdges';
-import { useNodeMapper, useNodes, type Point } from '_@primitives/useNodes';
+import { useNodeMapper, type Point } from '_@primitives/useNodes';
 
 import { calibPosition, useScale } from '_@primitives/useTransform';
-import { For, Show, onMount } from 'solid-js';
+import { For, Show } from 'solid-js';
 
 const [scale] = useScale;
-const [, setNodes] = useNodes;
 
 export default function EdgesCanvas() {
   const [nodeMapper] = useNodeMapper;
-  onMount(() => {
-    setNodes((nodes) => [...nodes]);
-  });
 
   const onDeleteEdge = (fromId: string, toId: string) => () => {
     edge.deleteEdge(fromId, toId);

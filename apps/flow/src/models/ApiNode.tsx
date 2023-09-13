@@ -3,11 +3,19 @@ import { BaseNode } from './BaseNode';
 import type { BaseConstructorProps, INode, SliderRightFormProps } from './BaseNode';
 
 export class ApiNode extends BaseNode implements INode {
-  api = '';
+  attributes = {
+    api: '',
+  };
 
   constructor(nodeInfo: BaseConstructorProps) {
     super(nodeInfo);
     this.type = 'api';
+  }
+
+  get() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { element, ...currNode } = this.node();
+    return { ...currNode, type: this.type, attributes: this.attributes };
   }
 
   SliderRightForm({ self, onSubmit }: SliderRightFormProps<ApiNode>) {
@@ -17,7 +25,7 @@ export class ApiNode extends BaseNode implements INode {
       e.preventDefault();
       console.log({ self });
       self.setNode((currNode) => ({ ...currNode, title: title() }));
-      self.api = api();
+      self.attributes.api = api();
       onSubmit();
     };
     return (

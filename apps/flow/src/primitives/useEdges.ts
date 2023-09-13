@@ -1,4 +1,4 @@
-import { Edge } from '_@models/edge';
+import { Edge } from '_@models/Edge';
 
 export const edge = new Edge({
   '1': ['2', '3'],

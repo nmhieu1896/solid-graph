@@ -1,11 +1,31 @@
 import Canvas from '_@components/canvas/index';
 import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
-import { addNodes } from '_@primitives/useNodes';
+import { nodes } from '_@primitives/useNodes';
+import { edge } from '_@primitives/useEdges';
 import { Accessor, createEffect, type Component } from 'solid-js';
+import axios from 'axios';
 
 const App: Component = () => {
   const [translate, setTranslate] = useTranslate;
   const [scale, setScale] = useScale;
+
+  setTimeout(() => {
+    // axios.get('https://platform-api.sens-vn.com/graph/projects');
+    axios.get('https://platform-api.sens-vn.com/graph/1');
+    // axios.post('https://platform-api.sens-vn.com/graph', {
+    //   projectId: '1',
+    //   projectName: 'Test',
+    //   nodes: nodes().map((node) => node.get()),
+    //   edges: edge.edges,
+    // });
+    // axios.patch('https://platform-api.sens-vn.com/graph/1', {
+    //   projectId: '1',
+    //   projectName: 'Test3',
+    //   // projectName: null,
+    //   nodes: nodes().map((node) => node.get()),
+    //   edges: edge.edges,
+    // });
+  }, 1000);
 
   createEffect(() => {
     window.addEventListener('wheel', (e) => {
@@ -54,7 +74,8 @@ const App: Component = () => {
       <Canvas />
 
       <div class="fixed bottom-2 left-2 border-2 border-green-500 grid gap-4">
-        <button onClick={addNodes}>Add Node</button>
+        <button onClick={() => nodes.addNode('bash')}>Add BASH Node</button>
+        <button onClick={() => nodes.addNode('api')}>Add API Node</button>
         <button
           onclick={() => {
             setScale((scale) => scale + 0.1);

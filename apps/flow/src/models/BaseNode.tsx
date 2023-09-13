@@ -12,7 +12,7 @@ export type NodeInfo = {
   element?: HTMLDivElement;
 };
 
-export type NodeType = 'base' | 'bash' | 'api';
+export type NodeType = 'bash' | 'api';
 
 export type SliderRightFormProps<T extends BaseNode> = {
   self: T;
@@ -27,6 +27,7 @@ export interface INode {
   element?: HTMLDivElement;
   title: string;
   SliderRightForm(props: any): JSX.Element;
+  get(): Record<string, any>;
 }
 
 export type BaseConstructorProps = Pick<NodeInfo, 'pos'> & Partial<NodeInfo>;
@@ -37,11 +38,14 @@ export class BaseNode {
   type: NodeType;
 
   constructor(nodeInfo: BaseConstructorProps) {
-    this.type = 'base';
     const id = Date.now().toString(36);
     const [node, setNode] = createSignal({ id, title: `node-${this.type} ${id}`, ...nodeInfo });
     this.node = node;
     this.setNode = setNode;
+  }
+
+  get() {
+    return { ...this.node(), type: this.type };
   }
 
   get id() {
