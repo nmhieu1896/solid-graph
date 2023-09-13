@@ -76,28 +76,6 @@ const App: Component = () => {
       <div class="fixed bottom-2 left-2 border-2 border-green-500 grid gap-4">
         <button onClick={() => nodes.addNode('bash')}>Add BASH Node</button>
         <button onClick={() => nodes.addNode('api')}>Add API Node</button>
-        <button
-          onclick={() => {
-            setScale((scale) => scale + 0.1);
-          }}
-        >
-          zoom in
-        </button>
-        <button
-          onclick={() => {
-            setScale((scale) => scale - 0.1);
-          }}
-        >
-          zoom out
-        </button>
-        <button
-          onclick={() => {
-            setScale(1);
-            setTranslate({ x: 0, y: 0 });
-          }}
-        >
-          Reset
-        </button>
       </div>
     </div>
   );
