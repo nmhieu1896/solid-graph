@@ -1,9 +1,9 @@
-import { Point } from '_@primitives/useNodes';
 import { useScale, useTranslate, calibPosition } from '_@primitives/useTransform';
 import { createSignal, onMount } from 'solid-js';
 import SlideOver from '_@components/modals/SlideOver';
 import { INode } from '_@models/BaseNode';
 import { edge } from '_@primitives/useEdges';
+import { nodes } from '_@primitives/useNodes';
 
 type NodeProps = {
   node: INode;
@@ -79,7 +79,20 @@ export default function Node({ node }: NodeProps) {
       </div>
 
       <SlideOver open={open} onClose={onToggle(false)}>
-        <node.SliderRightForm self={node} onSubmit={onToggle(false)} />
+        <div>
+          <header class="flex justify-between p-4 border-b border-b-green-700 mb-4">
+            <h1 class="text-2xl font-bold">{node.title}</h1>
+            <button
+              onClick={() => {
+                nodes.removeNode(node.id);
+                edge.removeEdgeByNodeId(node.id);
+              }}
+            >
+              Delete node
+            </button>
+          </header>
+          <node.SliderRightForm self={node} onSubmit={onToggle(false)} />
+        </div>
       </SlideOver>
     </>
   );

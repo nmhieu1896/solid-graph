@@ -14,20 +14,12 @@ export const edge = new Edge({
     }
   });
 
-  document.addEventListener('mouseup', (e) => {
-    const target = e.target;
-    queueMicrotask(() => {
-      //Defer
-      edge.edgeSrc = undefined;
-      edge.mousePos = undefined;
-    });
-    if (!(target instanceof HTMLElement)) return;
-
-    edge.createEdge(target?.dataset?.nodeId || target?.parentElement?.dataset?.nodeId);
+  document.addEventListener('mouseup', (e: any) => {
+    edge.clearDraggingEdge();
+    edge.createEdge(e.target?.dataset?.nodeId || e.target?.parentElement?.dataset?.nodeId);
   });
 
   document.addEventListener('mousemove', (e) => {
-    if (!edge.edgeSrc) return;
     edge.mousePos = { x: e.clientX, y: e.clientY };
   });
 }

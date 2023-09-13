@@ -1,10 +1,5 @@
 import { type Accessor, createSignal, type Setter, JSX } from 'solid-js';
 
-type Point = {
-  x: number;
-  y: number;
-};
-
 export type NodeInfo = {
   id: string;
   pos: Point;

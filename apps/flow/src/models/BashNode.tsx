@@ -20,7 +20,7 @@ export class BashNode extends BaseNode implements INode {
 
   SliderRightForm({ self, onSubmit }: SliderRightFormProps<BashNode>) {
     const [title, setTitle] = createSignal(self.node().title);
-    const [bash, setBash] = createSignal(self.node().title);
+    const [bash, setBash] = createSignal('');
     const _onSubmit = (e) => {
       e.preventDefault();
       self.setNode({ ...self.node(), title: title() });

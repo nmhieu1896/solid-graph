@@ -1,7 +1,6 @@
 import { Accessor, Setter, createSignal } from 'solid-js';
 
 type EdgeMap = Record<string, string[]>;
-type Point = { x: number; y: number };
 
 export class Edge {
   private _edges: Accessor<EdgeMap>;
@@ -39,6 +38,7 @@ export class Edge {
     return this._mousePos();
   }
   set mousePos(pos: Point | undefined) {
+    if (!this._edgeSrc) return;
     this._setMousePos(pos);
   }
 
@@ -60,13 +60,29 @@ export class Edge {
     this._setEdge(newEdges);
   }
 
-  deleteEdge(fromId: string, toId: string) {
+  removeEdge(fromId: string, toId: string) {
     const newEdges = this._edges();
     const currentFromId = newEdges[fromId];
     if (!currentFromId) return;
 
     newEdges[fromId] = currentFromId.filter((id) => id !== toId);
-    console.log(newEdges);
     this._setEdge(newEdges);
+  }
+
+  removeEdgeByNodeId(nodeId: string) {
+    const newEdges = {};
+    Object.keys(this._edges()).forEach((fromId) => {
+      if (nodeId === fromId) return;
+      newEdges[fromId] = this._edges()[fromId].filter((id) => id !== nodeId);
+    });
+    this._setEdge(newEdges);
+  }
+
+  clearDraggingEdge() {
+    queueMicrotask(() => {
+      //Defer
+      this._setEdgeSrc(undefined);
+      this._setMousePos(undefined);
+    });
   }
 }

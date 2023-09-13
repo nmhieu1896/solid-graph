@@ -1,6 +1,6 @@
 import { INode } from '_@models/BaseNode';
 import { edge } from '_@primitives/useEdges';
-import { useNodeMapper, type Point } from '_@primitives/useNodes';
+import { nodes } from '_@primitives/useNodes';
 
 import { calibPosition, useScale } from '_@primitives/useTransform';
 import { For, Show } from 'solid-js';
@@ -8,10 +8,8 @@ import { For, Show } from 'solid-js';
 const [scale] = useScale;
 
 export default function EdgesCanvas() {
-  const [nodeMapper] = useNodeMapper;
-
-  const onDeleteEdge = (fromId: string, toId: string) => () => {
-    edge.deleteEdge(fromId, toId);
+  const onRemoveEdge = (fromId: string, toId: string) => () => {
+    edge.removeEdge(fromId, toId);
   };
 
   return (
@@ -22,8 +20,8 @@ export default function EdgesCanvas() {
             <For each={edge.edges[fromNodeId]}>
               {(toNodeId) => {
                 // 2 Nodes to create an Edge
-                const fromNode = nodeMapper()[fromNodeId];
-                const toNode = nodeMapper()[toNodeId];
+                const fromNode = nodes.getNode(fromNodeId);
+                const toNode = nodes.getNode(toNodeId);
                 // 2 Nodes's output/input Position for creating edge
                 const outPos = () => getElementPos(fromNode, 'out');
                 const inPos = () => getElementPos(toNode, 'in');
@@ -50,7 +48,7 @@ export default function EdgesCanvas() {
                       cx={center().x}
                       cy={center().y}
                       r={10 * scale()}
-                      onClick={onDeleteEdge(fromNodeId, toNodeId)}
+                      onClick={onRemoveEdge(fromNodeId, toNodeId)}
                     />
                   </>
                 );
@@ -61,7 +59,7 @@ export default function EdgesCanvas() {
         <Show when={edge.edgeSrc && edge.mousePos}>
           <path
             class="stroke-slate-400 pointer-events-none stroke-2 transition-[stroke-width,_stroke]"
-            d={convertLineToSpline(calibPosition(getElementPos(nodeMapper()[edge.edgeSrc], 'out')), edge.mousePos)}
+            d={convertLineToSpline(calibPosition(getElementPos(nodes.getNode(edge.edgeSrc), 'out')), edge.mousePos)}
             fill="none"
           />
         </Show>

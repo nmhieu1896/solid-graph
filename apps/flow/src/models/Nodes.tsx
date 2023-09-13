@@ -1,8 +1,8 @@
+import { useTranslate } from '_@primitives/useTransform';
 import { Accessor, Setter, createSignal } from 'solid-js';
 import { ApiNode } from './ApiNode';
+import { BaseConstructorProps, INode, NodeType } from './BaseNode';
 import { BashNode } from './BashNode';
-import { INode, NodeType, BaseConstructorProps } from './BaseNode';
-import { useTranslate } from '_@primitives/useTransform';
 
 const [translate] = useTranslate;
 
@@ -12,6 +12,7 @@ export class Nodes {
 
   constructor(initNodes: (BaseConstructorProps & { type: NodeType })[]) {
     const [nodes, setNodes] = createSignal(initNodes.map((node) => new nodeMap[node.type](node)));
+
     this.nodes = nodes;
     this.setNodes = setNodes as any as Setter<INode[]>;
   }
@@ -30,6 +31,10 @@ export class Nodes {
 
   removeNode(id: string) {
     this.setNodes((nodes) => nodes.filter((node) => node.id !== id));
+  }
+
+  getNode(id: string) {
+    return this.nodes().find((node) => node.id === id);
   }
 }
 
