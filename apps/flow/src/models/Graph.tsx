@@ -1,22 +1,21 @@
 import axios from 'axios';
+import { NodeSnapshot } from './BaseNode';
+import { Edges, EdgeSnapshot } from './Edges';
 import { Nodes } from './Nodes';
-import { Edge, EdgeSnapshot } from './Edge';
-import { NodeInstance, NodeSnapshot } from './BaseNode';
-import { Accessor, Setter, createSignal } from 'solid-js';
 
 const data = await axios.get('https://platform-api.sens-vn.com/graph/1').then((data) => data.data.data[0]);
 
 type GraphSnapshot = NodeSnapshot | EdgeSnapshot;
 export class Graph {
-  _nodes: Nodes;
-  _edges: Edge;
+  private _nodes: Nodes;
+  private _edges: Edges;
   history: Record<string, GraphSnapshot>[] = [];
   historyIndex = -1;
-  debounceTimer: any;
+  private debounceTimer: any;
 
   constructor() {
     const nodes = new Nodes(data.nodes, this);
-    const edges = new Edge(data.edges, this);
+    const edges = new Edges(data.edges, this);
     this._nodes = nodes;
     this._edges = edges;
   }
@@ -30,9 +29,9 @@ export class Graph {
 
     Object.values(data).forEach((snapshot) => {
       if (snapshot.snapshotType === 'edge') {
-        this.edges.useSnapshot(snapshot);
+        this._edges.useSnapshot(snapshot);
       } else {
-        this.nodes.useSnapshot(snapshot);
+        this._nodes.useSnapshot(snapshot);
       }
     });
   }
@@ -46,9 +45,9 @@ export class Graph {
 
     Object.values(data).forEach((snapshot) => {
       if (snapshot.snapshotType === 'edge') {
-        this.edges.useSnapshot(snapshot);
+        this._edges.useSnapshot(snapshot);
       } else {
-        this.nodes.useSnapshot(snapshot);
+        this._nodes.useSnapshot(snapshot);
       }
     });
   }

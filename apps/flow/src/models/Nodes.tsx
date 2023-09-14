@@ -1,27 +1,28 @@
 import { useTranslate } from '_@primitives/useTransform';
 import { Accessor, Setter, createSignal } from 'solid-js';
 import { ApiNode } from './ApiNode';
-import { BaseConstructorProps, NodeInstance, NodeType, NodeSnapshot } from './BaseNode';
+import { BaseConstructorProps, NodeInstance, NodeSnapshot } from './BaseNode';
 import { BashNode } from './BashNode';
 import { Graph } from './Graph';
+import { NodeType } from './interfaces';
 
 const [translate] = useTranslate;
 
 export class Nodes {
-  nodes: Accessor<NodeInstance[]>;
-  setNodes: Setter<NodeInstance[]>;
-  graph?: Graph;
+  private _nodes: Accessor<NodeInstance[]>;
+  private _setNodes: Setter<NodeInstance[]>;
+  private graph?: Graph;
 
   constructor(initNodes: (BaseConstructorProps & { type: NodeType })[], graph?: Graph) {
     const [nodes, setNodes] = createSignal(initNodes.map((node) => new nodeMap[node.type](node, graph)));
     this.graph = graph;
-    this.nodes = nodes;
-    this.setNodes = setNodes as any as Setter<NodeInstance[]>;
+    this._nodes = nodes;
+    this._setNodes = setNodes as any as Setter<NodeInstance[]>;
   }
 
   addNode(type: NodeType) {
     const id = Date.now().toString(36);
-    this.setNodes((nodes) => [
+    this._setNodes((nodes) => [
       ...nodes,
       new nodeMap[type](
         {
@@ -35,15 +36,19 @@ export class Nodes {
   }
 
   removeNode(id: string) {
-    this.setNodes((nodes) => nodes.filter((node) => node.id !== id));
+    this._setNodes((nodes) => nodes.filter((node) => node.id !== id));
   }
 
   getNode(id: string) {
-    return this.nodes().find((node) => node.id === id);
+    return this._nodes().find((node) => node.id === id);
   }
 
   useSnapshot(node: NodeSnapshot) {
     return this.getNode(node.id)?.useSnapshot(node);
+  }
+
+  get nodes() {
+    return this._nodes();
   }
 }
 

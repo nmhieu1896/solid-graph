@@ -1,23 +1,24 @@
 import { Accessor, Setter, createSignal } from 'solid-js';
 import { Graph } from './Graph';
+import { ISnapshot } from './interfaces';
 
 type EdgeMap = Record<string, string[]>;
 
-export class Edge {
+export class Edges implements ISnapshot<EdgeSnapshot> {
   private _edges: Accessor<EdgeMap>;
-  private _setEdge: Setter<EdgeMap>;
+  private _setEdges: Setter<EdgeMap>;
   private _edgeSrc: Accessor<string | undefined>;
   private _setEdgeSrc: Setter<string | undefined>;
   private _mousePos: Accessor<Point | undefined>;
   private _setMousePos: Setter<Point | undefined>;
-  graph?: Graph;
+  private graph?: Graph;
 
   constructor(initEdge: EdgeMap, graph: Graph) {
     const [edgeSrc, setEdgeSrc] = createSignal<string>();
     const [edges, setEdges] = createSignal(initEdge, { equals: false });
     const [mousePos, setMousePos] = createSignal<Point>();
     this._edges = edges;
-    this._setEdge = setEdges;
+    this._setEdges = setEdges;
     this._edgeSrc = edgeSrc;
     this._setEdgeSrc = setEdgeSrc;
     this._mousePos = mousePos;
@@ -26,27 +27,29 @@ export class Edge {
   }
 
   takeSnapshot() {
-    return this._edges();
+    return {
+      snapshotType: 'edge',
+      edge: this._edges(),
+    } as const;
   }
   useSnapshot(edge: EdgeSnapshot) {
-    return this._setEdge(edge.edge);
+    return this._setEdges(edge.edge);
   }
 
   updateHistory() {
-    this.graph.pushHistory({
-      snapshotType: 'edge',
-      edge: this.takeSnapshot(),
-    });
+    this.graph.pushHistory(this.takeSnapshot());
+  }
+
+  setEdges(edges: EdgeMap) {
+    this.updateHistory();
+    this._setEdges(edges);
+    this.updateHistory();
   }
 
   get edges() {
     return this._edges();
   }
-  // set edges(edges: EdgeMap) {
-  //   console.log('UPDATE EDGES', edges);
-  //   this.updateHistory();
-  //   this._setEdge(edges);
-  // }
+
   get edgeSrc() {
     return this._edgeSrc();
   }
@@ -69,27 +72,25 @@ export class Edge {
     if (!this.allowEdgeCreation(targetNodeId)) return;
     const src = this._edgeSrc() as string;
 
-    const newEdges = { ...this._edges() };
+    const newEdges = structuredClone(this._edges());
     const currentFromId = newEdges[src];
     if (!currentFromId) {
       newEdges[src] = [targetNodeId];
     } else if (!currentFromId.includes(targetNodeId)) {
       currentFromId.push(targetNodeId);
     }
-    this.updateHistory();
-    this._setEdge(newEdges);
-    this.updateHistory();
+    console.log({ newEdges, oldEdges: this._edges() });
+    this.setEdges(newEdges);
   }
 
   removeEdge(fromId: string, toId: string) {
-    const newEdges = { ...this._edges() };
+    const newEdges = structuredClone(this._edges());
     const currentFromId = newEdges[fromId];
     if (!currentFromId) return;
-    this.updateHistory();
 
     newEdges[fromId] = currentFromId.filter((id) => id !== toId);
-    this._setEdge(newEdges);
-    this.updateHistory();
+
+    this.setEdges(newEdges);
   }
 
   removeEdgeByNodeId(nodeId: string) {
@@ -98,7 +99,7 @@ export class Edge {
       if (nodeId === fromId) return;
       newEdges[fromId] = this._edges()[fromId].filter((id) => id !== nodeId);
     });
-    this._setEdge(newEdges);
+    this.setEdges(newEdges);
   }
 
   clearDraggingEdge() {

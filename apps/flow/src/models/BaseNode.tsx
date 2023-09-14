@@ -1,49 +1,29 @@
-import { type Accessor, createSignal, type Setter, JSX } from 'solid-js';
+import { createSignal, type Accessor, type Setter } from 'solid-js';
 import { Graph } from './Graph';
-
-export type NodeInfo = {
-  id: string;
-  pos: Point;
-  title: string;
-  element?: HTMLDivElement;
-};
-
-export type NodeType = 'bash' | 'api';
-
-export type SliderRightFormProps<T extends BaseNode> = {
-  self: T;
-  onSubmit: () => void;
-};
-export interface INode {
-  id: string;
-  type: NodeType;
-  node: Accessor<NodeInfo>;
-  setNode: Setter<NodeInfo>;
-  pos: Point;
-  element?: HTMLDivElement;
-  title: string;
-  SliderRightForm(props: any): JSX.Element;
-  takeSnapshot(): Record<string, any>;
-  // updateHistory: () => void;
-  // setUpdateHistory: () => void;
-}
+import { INode, NodeInfo, NodeType } from './interfaces';
+// import { ISnapshot } from './Snapshot';
 
 export type BaseConstructorProps = Pick<NodeInfo, 'pos'> & Partial<NodeInfo>;
 
 export class BaseNode {
   node: Accessor<NodeInfo>;
-  setNode: Setter<NodeInfo>;
+  private _setNode: Setter<NodeInfo>;
   type: NodeType;
   graph: Graph;
   attributes: Record<string, any> = {};
-  // throttleFlag = false;
 
   constructor(nodeInfo: BaseConstructorProps, graph: Graph) {
     const id = Date.now().toString(36);
     const [node, setNode] = createSignal({ id, title: `node-${this.type} ${id}`, ...nodeInfo });
     this.node = node;
-    this.setNode = setNode;
+    this._setNode = setNode;
     this.graph = graph;
+  }
+
+  setNode(node: NodeInfo) {
+    this.updateHistory();
+    this._setNode(node);
+    this.updateHistory();
   }
 
   updateHistory() {
@@ -52,7 +32,7 @@ export class BaseNode {
 
   useSnapshot(data: NodeSnapshot) {
     const { attributes, ...node } = data;
-    this.setNode({ ...node, element: this.node().element });
+    this._setNode({ ...node, element: this.node().element });
     this.attributes = attributes;
   }
 
@@ -67,21 +47,19 @@ export class BaseNode {
     return this.node().pos;
   }
   set pos(pos: Point) {
-    this.updateHistory();
     this.setNode({ ...this.node(), pos });
   }
   get title() {
     return this.node().title;
   }
   set title(title: string) {
-    this.updateHistory();
     this.setNode({ ...this.node(), title });
   }
   get element(): HTMLDivElement | undefined {
     return this.node().element;
   }
   set element(element: HTMLDivElement) {
-    this.setNode({ ...this.node(), element });
+    this._setNode({ ...this.node(), element });
   }
 }
 

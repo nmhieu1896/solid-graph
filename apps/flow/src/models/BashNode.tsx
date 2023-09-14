@@ -1,7 +1,8 @@
 import { createSignal } from 'solid-js';
 import { BaseNode } from './BaseNode';
-import type { BaseConstructorProps, INode, SliderRightFormProps } from './BaseNode';
+import type { BaseConstructorProps } from './BaseNode';
 import { Graph } from './Graph';
+import { INode, SliderRightFormProps } from './interfaces';
 
 export class BashNode extends BaseNode implements INode {
   attributes = {
@@ -24,11 +25,10 @@ export class BashNode extends BaseNode implements INode {
     const [bash, setBash] = createSignal('');
     const _onSubmit = (e) => {
       e.preventDefault();
-      self.updateHistory();
+
       self.setNode({ ...self.node(), title: title() });
       self.attributes.bash = bash();
       onSubmit();
-      self.updateHistory();
     };
     return (
       <form class="grid gap-5" onSubmit={_onSubmit}>

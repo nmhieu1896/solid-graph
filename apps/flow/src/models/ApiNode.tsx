@@ -1,7 +1,8 @@
 import { createSignal } from 'solid-js';
 import { BaseNode } from './BaseNode';
-import type { BaseConstructorProps, INode, SliderRightFormProps } from './BaseNode';
+import type { BaseConstructorProps } from './BaseNode';
 import { Graph } from './Graph';
+import { INode, SliderRightFormProps } from './interfaces';
 
 export class ApiNode extends BaseNode implements INode {
   attributes = {
@@ -24,11 +25,10 @@ export class ApiNode extends BaseNode implements INode {
     const [api, setApi] = createSignal('');
     const _onSubmit = (e) => {
       e.preventDefault();
-      self.updateHistory();
-      self.setNode((currNode) => ({ ...currNode, title: title() }));
+
+      self.setNode({ ...self.node(), title: title() });
       self.attributes.api = api();
       onSubmit();
-      self.updateHistory();
     };
     return (
       <form class="grid gap-5" onSubmit={_onSubmit}>

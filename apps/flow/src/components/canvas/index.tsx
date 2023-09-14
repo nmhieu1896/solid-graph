@@ -8,7 +8,7 @@ export default function Canvas() {
     <>
       <EdgesCanvas />
 
-      <For each={graph.nodes.nodes()}>{(node) => <Node node={node} />}</For>
+      <For each={graph.nodes.nodes}>{(node) => <Node node={node} />}</For>
     </>
   );
 }

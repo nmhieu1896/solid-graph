@@ -9,7 +9,7 @@ window.graph = graph;
 let debounce: any;
 createEffect(() => {
   const newEdges = graph.edges.edges;
-  const newNodes = graph.nodes.nodes().map((node) => node.takeSnapshot());
+  const newNodes = graph.nodes.nodes.map((node) => node.takeSnapshot());
 
   clearTimeout(debounce);
   debounce = setTimeout(
