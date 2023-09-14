@@ -76,6 +76,8 @@ const App: Component = () => {
       <div class="fixed bottom-2 left-2 border-2 border-green-500 grid gap-4">
         <button onClick={() => graph.nodes.addNode('bash')}>Add BASH Node</button>
         <button onClick={() => graph.nodes.addNode('api')}>Add API Node</button>
+        <button onClick={() => graph.undo()}>UNDO</button>
+        <button onClick={() => graph.redo()}>REDO</button>
       </div>
     </div>
   );

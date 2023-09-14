@@ -3,12 +3,13 @@ import axios from 'axios';
 import { createEffect } from 'solid-js';
 
 export const graph = new Graph();
+window.graph = graph;
 
 // DEBOUNCE update to Database
 let debounce: any;
 createEffect(() => {
   const newEdges = graph.edges.edges;
-  const newNodes = graph.nodes.nodes().map((node) => node.get());
+  const newNodes = graph.nodes.nodes().map((node) => node.takeSnapshot());
 
   clearTimeout(debounce);
   debounce = setTimeout(
