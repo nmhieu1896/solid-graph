@@ -2,8 +2,8 @@ import { useScale, useTranslate, calibPosition } from '_@primitives/useTransform
 import { createSignal, onMount } from 'solid-js';
 import SlideOver from '_@components/modals/SlideOver';
 import { INode } from '_@models/BaseNode';
-import { edge } from '_@primitives/useEdges';
-import { nodes } from '_@primitives/useNodes';
+
+import { graph } from '_@primitives/useGraph';
 
 type NodeProps = {
   node: INode;
@@ -59,7 +59,7 @@ export default function Node({ node }: NodeProps) {
           if (e.target === ref) setDragPos({ x: e.offsetX * scale(), y: e.offsetY * scale() });
         }}
         onMouseOver={() => {
-          if (edge.allowEdgeCreation(node.id)) setDroppable(true);
+          if (graph.edges.allowEdgeCreation(node.id)) setDroppable(true);
         }}
         onMouseLeave={() => {
           setDroppable(false);
@@ -84,8 +84,8 @@ export default function Node({ node }: NodeProps) {
             <h1 class="text-2xl font-bold">{node.title}</h1>
             <button
               onClick={() => {
-                nodes.removeNode(node.id);
-                edge.removeEdgeByNodeId(node.id);
+                graph.nodes.removeNode(node.id);
+                graph.edges.removeEdgeByNodeId(node.id);
               }}
             >
               Delete node

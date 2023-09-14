@@ -1,7 +1,7 @@
 import Canvas from '_@components/canvas/index';
 import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
-import { nodes } from '_@primitives/useNodes';
-import { edge } from '_@primitives/useEdges';
+import { graph } from '_@primitives/useGraph';
+
 import { Accessor, createEffect, type Component } from 'solid-js';
 import axios from 'axios';
 
@@ -74,8 +74,8 @@ const App: Component = () => {
       <Canvas />
 
       <div class="fixed bottom-2 left-2 border-2 border-green-500 grid gap-4">
-        <button onClick={() => nodes.addNode('bash')}>Add BASH Node</button>
-        <button onClick={() => nodes.addNode('api')}>Add API Node</button>
+        <button onClick={() => graph.nodes.addNode('bash')}>Add BASH Node</button>
+        <button onClick={() => graph.nodes.addNode('api')}>Add API Node</button>
       </div>
     </div>
   );

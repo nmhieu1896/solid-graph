@@ -1,6 +1,6 @@
 import { INode } from '_@models/BaseNode';
-import { edge } from '_@primitives/useEdges';
-import { nodes } from '_@primitives/useNodes';
+
+import { graph } from '_@primitives/useGraph';
 
 import { calibPosition, useScale } from '_@primitives/useTransform';
 import { For, Show } from 'solid-js';
@@ -9,19 +9,19 @@ const [scale] = useScale;
 
 export default function EdgesCanvas() {
   const onRemoveEdge = (fromId: string, toId: string) => () => {
-    edge.removeEdge(fromId, toId);
+    graph.edges.removeEdge(fromId, toId);
   };
 
   return (
     <>
       <svg class="absolute left-0 top-0 w-full h-full " xmlns="http://www.w3.org/2000/svg">
-        <For each={Object.keys(edge.edges)}>
+        <For each={Object.keys(graph.edges.edges)}>
           {(fromNodeId) => (
-            <For each={edge.edges[fromNodeId]}>
+            <For each={graph.edges.edges[fromNodeId]}>
               {(toNodeId) => {
                 // 2 Nodes to create an Edge
-                const fromNode = nodes.getNode(fromNodeId);
-                const toNode = nodes.getNode(toNodeId);
+                const fromNode = graph.nodes.getNode(fromNodeId);
+                const toNode = graph.nodes.getNode(toNodeId);
                 // 2 Nodes's output/input Position for creating edge
                 const outPos = () => getElementPos(fromNode, 'out');
                 const inPos = () => getElementPos(toNode, 'in');
@@ -56,10 +56,13 @@ export default function EdgesCanvas() {
             </For>
           )}
         </For>
-        <Show when={edge.edgeSrc && edge.mousePos}>
+        <Show when={graph.edges.edgeSrc && graph.edges.mousePos}>
           <path
             class="stroke-slate-400 pointer-events-none stroke-2 transition-[stroke-width,_stroke]"
-            d={convertLineToSpline(calibPosition(getElementPos(nodes.getNode(edge.edgeSrc), 'out')), edge.mousePos)}
+            d={convertLineToSpline(
+              calibPosition(getElementPos(graph.nodes.getNode(graph.edges.edgeSrc), 'out')),
+              graph.edges.mousePos,
+            )}
             fill="none"
           />
         </Show>

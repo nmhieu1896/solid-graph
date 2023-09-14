@@ -1,46 +1,43 @@
-import { Edge } from '_@models/Edge';
+import { Graph } from '_@models/Graph';
 import axios from 'axios';
 import { createEffect } from 'solid-js';
 
-const res: any = await axios.get('https://platform-api.sens-vn.com/graph/1').then((data) => data.data.data[0].edges);
+export const graph = new Graph();
 
-export const edge = new Edge(res);
-// export const edge = new Edge({
-//   '1': ['2', '3'],
-//   '2': ['4'],
-// });
-
+// DEBOUNCE update to Database
 let debounce: any;
 createEffect(() => {
-  const newEdges = edge.edges;
+  const newEdges = graph.edges.edges;
+  const newNodes = graph.nodes.nodes().map((node) => node.get());
 
   clearTimeout(debounce);
-
   debounce = setTimeout(
     () =>
       axios.patch('https://platform-api.sens-vn.com/graph/1', {
         projectId: '1',
         edges: newEdges,
+        nodes: newNodes,
       }),
-    2000,
+    3000,
   );
 });
 
+// Drag to create Edges
 {
   document.addEventListener('mousedown', (e) => {
     const target = e.target;
     if (!(target instanceof HTMLElement)) return;
     if (target.classList.contains('edge-dragger-out')) {
-      edge.edgeSrc = target.parentElement?.dataset.nodeId;
+      graph.edges.edgeSrc = target.parentElement?.dataset.nodeId;
     }
   });
 
   document.addEventListener('mouseup', (e: any) => {
-    edge.clearDraggingEdge();
-    edge.createEdge(e.target?.dataset?.nodeId || e.target?.parentElement?.dataset?.nodeId);
+    graph.edges.clearDraggingEdge();
+    graph.edges.createEdge(e.target?.dataset?.nodeId || e.target?.parentElement?.dataset?.nodeId);
   });
 
   document.addEventListener('mousemove', (e) => {
-    edge.mousePos = { x: e.clientX, y: e.clientY };
+    graph.edges.mousePos = { x: e.clientX, y: e.clientY };
   });
 }
