@@ -1,11 +1,10 @@
 import { createSignal, type Accessor, type Setter } from 'solid-js';
 import { Graph } from './Graph';
-import { INode, NodeInfo, NodeType } from './interfaces';
-// import { ISnapshot } from './Snapshot';
+import { INode, NodeInfo, NodeType, ISnapshot } from './interfaces';
 
 export type BaseConstructorProps = Pick<NodeInfo, 'pos'> & Partial<NodeInfo>;
 
-export class BaseNode {
+export class BaseNode implements ISnapshot<NodeSnapshot> {
   node: Accessor<NodeInfo>;
   private _setNode: Setter<NodeInfo>;
   type: NodeType;
@@ -30,14 +29,16 @@ export class BaseNode {
     this.graph.pushHistory({ ...this.takeSnapshot(), snapshotType: 'node' });
   }
 
-  useSnapshot(data: NodeSnapshot) {
+  useSnapshot(data: Omit<NodeSnapshot, 'snapshotType'>) {
     const { attributes, ...node } = data;
     this._setNode({ ...node, element: this.node().element });
     this.attributes = attributes;
   }
 
-  takeSnapshot() {
-    return { ...this.node(), type: this.type, attributes: this.attributes };
+  takeSnapshot(): NodeSnapshot {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { element, ...currNode } = this.node();
+    return { ...currNode, type: this.type, attributes: this.attributes, snapshotType: 'node' };
   }
 
   get id() {
@@ -64,8 +65,10 @@ export class BaseNode {
 }
 
 export type NodeInstance = INode & BaseNode;
-export type NodeSnapshot = Omit<NodeInfo, 'element'> & {
-  snapshotType: 'node';
-  type: NodeType;
-  attributes: Record<string, any>;
-};
+export type NodeSnapshot = Prettify<
+  Omit<NodeInfo, 'element'> & {
+    snapshotType: 'node';
+    type: NodeType;
+    attributes: Record<string, any>;
+  }
+>;

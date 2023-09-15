@@ -14,12 +14,6 @@ export class ApiNode extends BaseNode implements INode {
     this.type = 'api';
   }
 
-  takeSnapshot() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { element, ...currNode } = this.node();
-    return { ...currNode, type: this.type, attributes: this.attributes };
-  }
-
   SliderRightForm({ self, onSubmit }: SliderRightFormProps<ApiNode>) {
     const [title, setTitle] = createSignal(self.node().title);
     const [api, setApi] = createSignal('');

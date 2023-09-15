@@ -29,11 +29,11 @@ export class Edges implements ISnapshot<EdgeSnapshot> {
   takeSnapshot() {
     return {
       snapshotType: 'edge',
-      edge: this._edges(),
+      edges: this._edges(),
     } as const;
   }
-  useSnapshot(edge: EdgeSnapshot) {
-    return this._setEdges(edge.edge);
+  useSnapshot(edge: Omit<EdgeSnapshot, 'snapshotType'>) {
+    return this._setEdges(edge.edges);
   }
 
   updateHistory() {
@@ -79,7 +79,6 @@ export class Edges implements ISnapshot<EdgeSnapshot> {
     } else if (!currentFromId.includes(targetNodeId)) {
       currentFromId.push(targetNodeId);
     }
-    console.log({ newEdges, oldEdges: this._edges() });
     this.setEdges(newEdges);
   }
 
@@ -99,7 +98,7 @@ export class Edges implements ISnapshot<EdgeSnapshot> {
       if (nodeId === fromId) return;
       newEdges[fromId] = this._edges()[fromId].filter((id) => id !== nodeId);
     });
-    this.setEdges(newEdges);
+    this._setEdges(newEdges);
   }
 
   clearDraggingEdge() {
@@ -113,5 +112,5 @@ export class Edges implements ISnapshot<EdgeSnapshot> {
 
 export type EdgeSnapshot = {
   snapshotType: 'edge';
-  edge: EdgeMap;
+  edges: EdgeMap;
 };

@@ -20,10 +20,16 @@ export class Nodes {
     this._setNodes = setNodes as any as Setter<NodeInstance[]>;
   }
 
+  setNodes(nodes: NodeInstance[]) {
+    this.updateHistory();
+    this._setNodes(nodes);
+    this.updateHistory();
+  }
+
   addNode(type: NodeType) {
     const id = Date.now().toString(36);
-    this._setNodes((nodes) => [
-      ...nodes,
+    this.setNodes([
+      ...this._nodes(),
       new nodeMap[type](
         {
           id,
@@ -36,15 +42,29 @@ export class Nodes {
   }
 
   removeNode(id: string) {
-    this._setNodes((nodes) => nodes.filter((node) => node.id !== id));
+    this.graph.updateHistory();
+    this._setNodes(this._nodes().filter((node) => node.id !== id));
+    this.graph.edges.removeEdgeByNodeId(id);
+    this.graph.updateHistory();
   }
 
   getNode(id: string) {
     return this._nodes().find((node) => node.id === id);
   }
 
-  useSnapshot(node: NodeSnapshot) {
-    return this.getNode(node.id)?.useSnapshot(node);
+  useSnapshot(snapshot: Omit<FullNodesSnapshot, 'snapshotType'>) {
+    this._setNodes(snapshot.nodes.map((node) => new nodeMap[node.type](node, this.graph)));
+  }
+
+  takeSnapshot(): FullNodesSnapshot {
+    return {
+      snapshotType: 'full-nodes',
+      nodes: this._nodes().map((node) => node.takeSnapshot()),
+    };
+  }
+
+  updateHistory() {
+    this.graph.pushHistory(this.takeSnapshot());
   }
 
   get nodes() {
@@ -57,3 +77,8 @@ const nodeMap = {
   bash: BashNode,
   api: ApiNode,
 } satisfies Record<NodeType, INodeImpl>;
+
+export type FullNodesSnapshot = {
+  snapshotType: 'full-nodes';
+  nodes: Omit<NodeSnapshot, 'snapshotType'>[];
+};

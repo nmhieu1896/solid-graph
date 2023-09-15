@@ -1,4 +1,4 @@
-import { INode } from '_@models/BaseNode';
+import { INode } from '_@models/interfaces';
 
 import { graph } from '_@primitives/useGraph';
 

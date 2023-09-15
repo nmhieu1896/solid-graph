@@ -1,7 +1,7 @@
 import { useScale, useTranslate, calibPosition } from '_@primitives/useTransform';
 import { createSignal, onMount } from 'solid-js';
 import SlideOver from '_@components/modals/SlideOver';
-import { INode } from '_@models/BaseNode';
+import { INode } from '_@models/interfaces';
 
 import { graph } from '_@primitives/useGraph';
 
@@ -85,7 +85,7 @@ export default function Node({ node }: NodeProps) {
             <button
               onClick={() => {
                 graph.nodes.removeNode(node.id);
-                graph.edges.removeEdgeByNodeId(node.id);
+                // graph.edges.removeEdgeByNodeId(node.id);
               }}
             >
               Delete node

@@ -1,9 +1,9 @@
 import type { Accessor, JSX } from 'solid-js';
 import { BaseNode } from './BaseNode';
 
-export interface ISnapshot<T> {
+export interface ISnapshot<T extends { snapshotType: string }> {
   takeSnapshot(): T;
-  useSnapshot(snapshot: T): void;
+  useSnapshot(snapshot: Omit<T, 'snapshotType'>): void;
 }
 
 export type NodeInfo = {
@@ -29,5 +29,4 @@ export interface INode {
   element?: HTMLDivElement;
   title: string;
   SliderRightForm(props: SliderRightFormProps<any>): JSX.Element;
-  // takeSnapshot(): Record<string, any>;
 }

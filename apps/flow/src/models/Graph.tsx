@@ -1,23 +1,28 @@
 import axios from 'axios';
 import { NodeSnapshot } from './BaseNode';
 import { Edges, EdgeSnapshot } from './Edges';
-import { Nodes } from './Nodes';
+import { FullNodesSnapshot, Nodes } from './Nodes';
+import { Accessor, createSignal, Setter } from 'solid-js';
 
 const data = await axios.get('https://platform-api.sens-vn.com/graph/1').then((data) => data.data.data[0]);
 
-type GraphSnapshot = NodeSnapshot | EdgeSnapshot;
+type UnionSnapshot = NodeSnapshot | EdgeSnapshot | FullNodesSnapshot | GraphSnapshot;
 export class Graph {
-  private _nodes: Nodes;
-  private _edges: Edges;
-  history: Record<string, GraphSnapshot>[] = [];
+  private _nodes: Accessor<Nodes>;
+  private _edges: Accessor<Edges>;
+  private _setNodes: Setter<Nodes>;
+  private _setEdges: Setter<Edges>;
+  history: Record<string, UnionSnapshot>[] = [];
   historyIndex = -1;
   private debounceTimer: any;
 
   constructor() {
-    const nodes = new Nodes(data.nodes, this);
-    const edges = new Edges(data.edges, this);
+    const [nodes, setNodes] = createSignal(new Nodes(data.nodes, this));
+    const [edges, setEdges] = createSignal(new Edges(data.edges, this));
     this._nodes = nodes;
     this._edges = edges;
+    this._setNodes = setNodes;
+    this._setEdges = setEdges;
   }
 
   undo() {
@@ -28,11 +33,10 @@ export class Graph {
     if (!data) return;
 
     Object.values(data).forEach((snapshot) => {
-      if (snapshot.snapshotType === 'edge') {
-        this._edges.useSnapshot(snapshot);
-      } else {
-        this._nodes.useSnapshot(snapshot);
-      }
+      if (snapshot.snapshotType === 'edge') queueMicrotask(() => this._edges().useSnapshot(snapshot));
+      if (snapshot.snapshotType === 'node') this._nodes().getNode(snapshot.id)?.useSnapshot(snapshot);
+      if (snapshot.snapshotType === 'full-nodes') this._nodes().useSnapshot(snapshot);
+      if (snapshot.snapshotType === 'graph') this.useSnapshot(snapshot);
     });
   }
 
@@ -44,16 +48,15 @@ export class Graph {
     if (!data) return;
 
     Object.values(data).forEach((snapshot) => {
-      if (snapshot.snapshotType === 'edge') {
-        this._edges.useSnapshot(snapshot);
-      } else {
-        this._nodes.useSnapshot(snapshot);
-      }
+      if (snapshot.snapshotType === 'edge') queueMicrotask(() => this._edges().useSnapshot(snapshot));
+      if (snapshot.snapshotType === 'node') this._nodes().getNode(snapshot.id)?.useSnapshot(snapshot);
+      if (snapshot.snapshotType === 'full-nodes') this._nodes().useSnapshot(snapshot);
+      if (snapshot.snapshotType === 'graph') this.useSnapshot(snapshot);
     });
   }
 
-  pushHistory(data: GraphSnapshot) {
-    const key = data.snapshotType === 'node' ? data?.id : 'edge';
+  pushHistory(data: UnionSnapshot) {
+    const key = data.snapshotType === 'node' ? data?.id : data.snapshotType;
 
     // RESET HISTORY WHEN PUSH NEW DATA IN THE MIDDLE OF HISTORY
     if (this.historyIndex < -1) {
@@ -78,11 +81,36 @@ export class Graph {
     }, 500);
   }
 
+  useSnapshot(data: GraphSnapshot) {
+    this._nodes().useSnapshot(data.nodes);
+    this._edges().useSnapshot(data.edges);
+  }
+  takeSnapshot(): GraphSnapshot {
+    const snapshotNodes = { nodes: this._nodes().takeSnapshot().nodes };
+    const edges = { edges: this._edges().takeSnapshot().edges };
+
+    return {
+      snapshotType: 'graph',
+      nodes: snapshotNodes,
+      edges: edges,
+    };
+  }
+
+  updateHistory() {
+    this.pushHistory(this.takeSnapshot());
+  }
+
   get nodes() {
-    return this._nodes;
+    return this._nodes();
   }
 
   get edges() {
-    return this._edges;
+    return this._edges();
   }
 }
+
+type GraphSnapshot = {
+  snapshotType: 'graph';
+  nodes: Omit<FullNodesSnapshot, 'snapshotType'>;
+  edges: Omit<EdgeSnapshot, 'snapshotType'>;
+};

@@ -14,12 +14,6 @@ export class BashNode extends BaseNode implements INode {
     this.type = 'bash';
   }
 
-  takeSnapshot() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { element, ...currNode } = this.node();
-    return { ...currNode, type: this.type, attributes: this.attributes };
-  }
-
   SliderRightForm({ self, onSubmit }: SliderRightFormProps<BashNode>) {
     const [title, setTitle] = createSignal(self.node().title);
     const [bash, setBash] = createSignal('');
