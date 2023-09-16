@@ -23,6 +23,7 @@ export default defineConfig({
       '_@components': join(__dirname, './src/components'),
       '_@models': join(__dirname, './src/models'),
       '_@primitives': join(__dirname, './src/primitives'),
+      '_@pages': join(__dirname, './src/pages'),
     },
   },
 });

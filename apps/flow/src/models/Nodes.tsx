@@ -14,7 +14,9 @@ export class Nodes {
   private graph?: Graph;
 
   constructor(initNodes: (BaseConstructorProps & { type: NodeType })[], graph?: Graph) {
-    const [nodes, setNodes] = createSignal(initNodes.map((node) => new nodeMap[node.type](node, graph)));
+    const [nodes, setNodes] = createSignal(
+      initNodes.map((node) => new nodeMap[node.type](node, graph)),
+    );
     this.graph = graph;
     this._nodes = nodes;
     this._setNodes = setNodes as any as Setter<NodeInstance[]>;

@@ -1,10 +1,7 @@
-import axios from 'axios';
+import { Accessor, createSignal, Setter } from 'solid-js';
 import { NodeSnapshot } from './BaseNode';
 import { Edges, EdgeSnapshot } from './Edges';
 import { FullNodesSnapshot, Nodes } from './Nodes';
-import { Accessor, createSignal, Setter } from 'solid-js';
-
-const data = await axios.get('https://platform-api.sens-vn.com/graph/1').then((data) => data.data.data[0]);
 
 type UnionSnapshot = NodeSnapshot | EdgeSnapshot | FullNodesSnapshot | GraphSnapshot;
 export class Graph {
@@ -17,8 +14,8 @@ export class Graph {
   private debounceTimer: any;
 
   constructor() {
-    const [nodes, setNodes] = createSignal(new Nodes(data.nodes, this));
-    const [edges, setEdges] = createSignal(new Edges(data.edges, this));
+    const [nodes, setNodes] = createSignal(new Nodes([], this));
+    const [edges, setEdges] = createSignal(new Edges({}, this));
     this._nodes = nodes;
     this._edges = edges;
     this._setNodes = setNodes;
@@ -33,8 +30,10 @@ export class Graph {
     if (!data) return;
 
     Object.values(data).forEach((snapshot) => {
-      if (snapshot.snapshotType === 'edge') queueMicrotask(() => this._edges().useSnapshot(snapshot));
-      if (snapshot.snapshotType === 'node') this._nodes().getNode(snapshot.id)?.useSnapshot(snapshot);
+      if (snapshot.snapshotType === 'edge')
+        queueMicrotask(() => this._edges().useSnapshot(snapshot));
+      if (snapshot.snapshotType === 'node')
+        this._nodes().getNode(snapshot.id)?.useSnapshot(snapshot);
       if (snapshot.snapshotType === 'full-nodes') this._nodes().useSnapshot(snapshot);
       if (snapshot.snapshotType === 'graph') this.useSnapshot(snapshot);
     });
@@ -48,8 +47,10 @@ export class Graph {
     if (!data) return;
 
     Object.values(data).forEach((snapshot) => {
-      if (snapshot.snapshotType === 'edge') queueMicrotask(() => this._edges().useSnapshot(snapshot));
-      if (snapshot.snapshotType === 'node') this._nodes().getNode(snapshot.id)?.useSnapshot(snapshot);
+      if (snapshot.snapshotType === 'edge')
+        queueMicrotask(() => this._edges().useSnapshot(snapshot));
+      if (snapshot.snapshotType === 'node')
+        this._nodes().getNode(snapshot.id)?.useSnapshot(snapshot);
       if (snapshot.snapshotType === 'full-nodes') this._nodes().useSnapshot(snapshot);
       if (snapshot.snapshotType === 'graph') this.useSnapshot(snapshot);
     });
@@ -81,24 +82,22 @@ export class Graph {
     }, 500);
   }
 
-  useSnapshot(data: GraphSnapshot) {
-    this._nodes().useSnapshot(data.nodes);
+  //-------------History management----------------
+  useSnapshot(data: Omit<GraphSnapshot, 'snapshotType'>) {
     this._edges().useSnapshot(data.edges);
+    this._nodes().useSnapshot(data.nodes);
   }
-  takeSnapshot(): GraphSnapshot {
-    const snapshotNodes = { nodes: this._nodes().takeSnapshot().nodes };
-    const edges = { edges: this._edges().takeSnapshot().edges };
 
-    return {
-      snapshotType: 'graph',
-      nodes: snapshotNodes,
-      edges: edges,
-    };
+  takeSnapshot(): GraphSnapshot {
+    const nodes = { nodes: this._nodes().takeSnapshot().nodes };
+    const edges = { edges: this._edges().takeSnapshot().edges };
+    return { snapshotType: 'graph', nodes, edges };
   }
 
   updateHistory() {
     this.pushHistory(this.takeSnapshot());
   }
+  //-------------History management----------------
 
   get nodes() {
     return this._nodes();
@@ -109,7 +108,7 @@ export class Graph {
   }
 }
 
-type GraphSnapshot = {
+export type GraphSnapshot = {
   snapshotType: 'graph';
   nodes: Omit<FullNodesSnapshot, 'snapshotType'>;
   edges: Omit<EdgeSnapshot, 'snapshotType'>;

@@ -1,13 +1,12 @@
+import { Graph } from '_@models/Graph';
 import { INode } from '_@models/interfaces';
-
-import { graph } from '_@primitives/useGraph';
 
 import { calibPosition, useScale } from '_@primitives/useTransform';
 import { For, Show } from 'solid-js';
 
 const [scale] = useScale;
 
-export default function EdgesCanvas() {
+export default function EdgesCanvas({ graph }: { graph: Graph }) {
   const onRemoveEdge = (fromId: string, toId: string) => () => {
     graph.edges.removeEdge(fromId, toId);
   };
@@ -28,7 +27,10 @@ export default function EdgesCanvas() {
                 // 2 Nodes Position in SVG After translation and scaling and it's center for deletion
                 const fromInSvg = () => calibPosition(outPos());
                 const toInSvg = () => calibPosition(inPos());
-                const center = () => ({ x: (fromInSvg().x + toInSvg().x) / 2, y: (fromInSvg().y + toInSvg().y) / 2 });
+                const center = () => ({
+                  x: (fromInSvg().x + toInSvg().x) / 2,
+                  y: (fromInSvg().y + toInSvg().y) / 2,
+                });
 
                 return (
                   <>

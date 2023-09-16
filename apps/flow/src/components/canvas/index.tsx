@@ -1,14 +1,14 @@
 import { For } from 'solid-js';
 import EdgesCanvas from './Edge';
 import Node from './Node';
-import { graph } from '_@primitives/useGraph';
+import { Graph } from '_@models/Graph';
 
-export default function Canvas() {
+export default function Canvas({ graph }: { graph: Graph }) {
   return (
     <>
-      <EdgesCanvas />
+      <EdgesCanvas graph={graph} />
 
-      <For each={graph.nodes.nodes}>{(node) => <Node node={node} />}</For>
+      <For each={graph.nodes.nodes}>{(node) => <Node node={node} graph={graph} />}</For>
     </>
   );
 }

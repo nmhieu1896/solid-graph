@@ -15,6 +15,7 @@
     "paths": {
       "_@components/*": ["./src/components/*"],
       "_@models/*": ["./src/models/*"],
+      "_@pages/*": ["./src/pages/*"],
       "_@primitives/*": ["./src/primitives/*"]
     }
   }

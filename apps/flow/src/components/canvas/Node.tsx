@@ -2,16 +2,16 @@ import { useScale, useTranslate, calibPosition } from '_@primitives/useTransform
 import { createSignal, onMount } from 'solid-js';
 import SlideOver from '_@components/modals/SlideOver';
 import { INode } from '_@models/interfaces';
-
-import { graph } from '_@primitives/useGraph';
+import { Graph } from '_@models/Graph';
 
 type NodeProps = {
   node: INode;
+  graph: Graph;
 };
 
 const [translate] = useTranslate;
 const [scale] = useScale;
-export default function Node({ node }: NodeProps) {
+export default function Node({ node, graph }: NodeProps) {
   const [dragPos, setDragPos] = createSignal<{ x: number; y: number }>();
   const [droppable, setDroppable] = createSignal(false); // Droppable is for creating edges
   const [open, setOpen] = createSignal(false);
@@ -74,7 +74,10 @@ export default function Node({ node }: NodeProps) {
 
         {/* Edge dragger */}
         {Object.values(pointMapperClass).map((v) => (
-          <div class={`${v}  absolute w-4 h-6  cursor-grab `} style={{ transform: `translate(-50%, -50%)` }} />
+          <div
+            class={`${v}  absolute w-4 h-6  cursor-grab `}
+            style={{ transform: `translate(-50%, -50%)` }}
+          />
         ))}
       </div>
 
