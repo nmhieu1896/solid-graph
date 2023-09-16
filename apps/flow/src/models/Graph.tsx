@@ -1,7 +1,7 @@
 import { Accessor, createSignal, Setter } from 'solid-js';
-import { NodeSnapshot } from './BaseNode';
-import { Edges, EdgeSnapshot } from './Edges';
-import { FullNodesSnapshot, Nodes } from './Nodes';
+import { Edges } from './Edges';
+import { Nodes } from './Nodes';
+import { EdgeSnapshot, FullNodesSnapshot, GraphSnapshot, NodeSnapshot } from './interfaces';
 
 type UnionSnapshot = NodeSnapshot | EdgeSnapshot | FullNodesSnapshot | GraphSnapshot;
 export class Graph {
@@ -57,6 +57,15 @@ export class Graph {
   }
 
   pushHistory(data: UnionSnapshot) {
+    //key can be `${nodeId}` | `graph` | `edge` | `full-nodes`
+    //each item in stack is {key1: snapshot, key2:snapshot, ...}
+    //Multi keys is for different nodes/edges changes
+    //  EXAMPLE Step1 : Drag NODE-A from posA1 -> posA2
+    //  EXAMPLE Step2 : Drag NODE-B from posB1 -> posB2,
+    //  EXAMPLE behavior: Stack should have 3 items, because we can undo/redo 2 times.
+    //  EXAMPLE STACK : [ { NODE-A: { pos: posA1 } }
+    //                    { NODE-A: { pos: posA2 } } ,{ NODE-B: {pos: posB1} }
+    //                    { NODE-B: { pos: posB1 } } ]
     const key = data.snapshotType === 'node' ? data?.id : data.snapshotType;
 
     // RESET HISTORY WHEN PUSH NEW DATA IN THE MIDDLE OF HISTORY
@@ -71,6 +80,8 @@ export class Graph {
     }
 
     // NO DEBOUNCE WHEN previous history is not contain current  NODE/EDGE
+    // Like examples Above, when we drag NODE-B, we have to store initial state of step B
+    // But we previous state of Node A and initial state of B is not 2 steps, it just one step => store in same stack's item
     if (!this.history.at(-1)?.[key]) {
       return (this.history.at(-1)[key] = data);
     }
@@ -107,9 +118,3 @@ export class Graph {
     return this._edges();
   }
 }
-
-export type GraphSnapshot = {
-  snapshotType: 'graph';
-  nodes: Omit<FullNodesSnapshot, 'snapshotType'>;
-  edges: Omit<EdgeSnapshot, 'snapshotType'>;
-};

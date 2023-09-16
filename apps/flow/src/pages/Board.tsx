@@ -1,6 +1,6 @@
 import { A, useParams } from '@solidjs/router';
 import Canvas from '_@components/canvas/index';
-import { GraphSnapshot } from '_@models/Graph';
+import { GraphSnapshot } from '_@models/interfaces';
 import { useGraph } from '_@primitives/useGraph';
 import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
 

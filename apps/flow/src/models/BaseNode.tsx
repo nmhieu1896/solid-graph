@@ -1,6 +1,6 @@
 import { createSignal, type Accessor, type Setter } from 'solid-js';
 import { Graph } from './Graph';
-import { INode, NodeInfo, NodeType, ISnapshot } from './interfaces';
+import { INode, NodeInfo, NodeType, ISnapshot, NodeSnapshot } from './interfaces';
 
 export type BaseConstructorProps = Pick<NodeInfo, 'pos'> & Partial<NodeInfo>;
 
@@ -65,10 +65,3 @@ export class BaseNode implements ISnapshot<NodeSnapshot> {
 }
 
 export type NodeInstance = INode & BaseNode;
-export type NodeSnapshot = Prettify<
-  Omit<NodeInfo, 'element'> & {
-    snapshotType: 'node';
-    type: NodeType;
-    attributes: Record<string, any>;
-  }
->;

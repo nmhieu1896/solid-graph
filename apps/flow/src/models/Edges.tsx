@@ -1,8 +1,6 @@
 import { Accessor, Setter, createSignal } from 'solid-js';
 import { Graph } from './Graph';
-import { ISnapshot } from './interfaces';
-
-type EdgeMap = Record<string, string[]>;
+import { ISnapshot, EdgeMap, EdgeSnapshot } from './interfaces';
 
 export class Edges implements ISnapshot<EdgeSnapshot> {
   private _edges: Accessor<EdgeMap>;
@@ -109,8 +107,3 @@ export class Edges implements ISnapshot<EdgeSnapshot> {
     });
   }
 }
-
-export type EdgeSnapshot = {
-  snapshotType: 'edge';
-  edges: EdgeMap;
-};

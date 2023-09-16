@@ -1,10 +1,10 @@
 import { useTranslate } from '_@primitives/useTransform';
 import { Accessor, Setter, createSignal } from 'solid-js';
 import { ApiNode } from './ApiNode';
-import { BaseConstructorProps, NodeInstance, NodeSnapshot } from './BaseNode';
+import { BaseConstructorProps, NodeInstance } from './BaseNode';
 import { BashNode } from './BashNode';
 import { Graph } from './Graph';
-import { NodeType } from './interfaces';
+import { NodeType, FullNodesSnapshot } from './interfaces';
 
 const [translate] = useTranslate;
 
@@ -79,8 +79,3 @@ const nodeMap = {
   bash: BashNode,
   api: ApiNode,
 } satisfies Record<NodeType, INodeImpl>;
-
-export type FullNodesSnapshot = {
-  snapshotType: 'full-nodes';
-  nodes: Omit<NodeSnapshot, 'snapshotType'>[];
-};
