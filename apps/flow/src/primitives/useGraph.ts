@@ -11,18 +11,12 @@ export const useGraph = () => {
     }
   };
   const onMouseUp = (e: MouseEvent) => {
-    const target = e.target;
-    if (!(target instanceof HTMLElement)) return;
-    if (target.classList.contains('edge-dragger-out')) {
-      graph.edges.edgeSrc = target.parentElement?.dataset.nodeId;
-    }
+    if (!(e.target instanceof HTMLElement)) return;
+    graph.edges.clearDraggingEdge();
+    graph.edges.createEdge(e.target?.dataset?.nodeId || e.target?.parentElement?.dataset?.nodeId);
   };
   const onMouseMove = (e: MouseEvent) => {
-    const target = e.target;
-    if (!(target instanceof HTMLElement)) return;
-    if (target.classList.contains('edge-dragger-out')) {
-      graph.edges.edgeSrc = target.parentElement?.dataset.nodeId;
-    }
+    graph.edges.mousePos = { x: e.clientX, y: e.clientY };
   };
 
   // Drag to create Edges
