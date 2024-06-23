@@ -6,8 +6,8 @@ import { type Component } from 'solid-js';
 const App: Component = () => {
   return (
     <Routes>
-      <Route path="/:id" component={Board} />
-      <Route path="/" component={Home} />
+      <Route path="/" component={Board} />
+      {/* <Route path="/" component={Home} /> */}
     </Routes>
   );
 };
