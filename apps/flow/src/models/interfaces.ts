@@ -10,7 +10,7 @@ export type NodeInfo = {
   element?: HTMLDivElement;
 };
 
-export type NodeType = 'bash' | 'api';
+export type NodeType = 'AAA' | 'BBB';
 
 export type SliderRightFormProps<T extends BaseNode> = {
   self: T;

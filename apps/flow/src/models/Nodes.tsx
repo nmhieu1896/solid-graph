@@ -1,8 +1,8 @@
 import { useTranslate } from '_@primitives/useTransform';
 import { Accessor, Setter, createSignal } from 'solid-js';
-import { ApiNode } from './ApiNode';
+import { AAANode } from './AAANode';
 import { BaseConstructorProps, NodeInstance } from './BaseNode';
-import { BashNode } from './BashNode';
+import { BBBNode } from './BBBNode';
 import { Graph } from './Graph';
 import { NodeType, FullNodesSnapshot } from './interfaces';
 
@@ -76,6 +76,6 @@ export class Nodes {
 
 type INodeImpl = new (nodeInfo: BaseConstructorProps, graph: Graph) => NodeInstance;
 const nodeMap = {
-  bash: BashNode,
-  api: ApiNode,
+  AAA: AAANode,
+  BBB: BBBNode,
 } satisfies Record<NodeType, INodeImpl>;

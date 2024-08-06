@@ -84,7 +84,9 @@ export default function Node({ node, graph }: NodeProps) {
       <SlideOver open={open} onClose={onToggle(false)}>
         <div>
           <header class="flex justify-between p-4 border-b border-b-green-700 mb-4">
-            <h1 class="text-2xl font-bold">{node.title}</h1>
+            <h1 class="text-2xl font-bold">
+              {node.title} | Type: {node.type}
+            </h1>
             <button
               onClick={() => {
                 graph.nodes.removeNode(node.id);
