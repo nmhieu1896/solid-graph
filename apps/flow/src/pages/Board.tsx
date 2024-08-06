@@ -1,54 +1,15 @@
-import { A, useParams } from '@solidjs/router';
+import { A } from '@solidjs/router';
 import Canvas from '_@components/canvas/index';
-import { GraphSnapshot } from '_@models/interfaces';
 import { useGraph } from '_@primitives/useGraph';
 import { useScale, useTranslate, type Translate } from '_@primitives/useTransform';
 
-import axios from 'axios';
-import { Accessor, createEffect, createResource, onCleanup } from 'solid-js';
+import { Accessor, onCleanup } from 'solid-js';
 
 export default function Board() {
   const graph = useGraph();
-  const params = useParams();
-  // const [data] = createResource(params, (param) =>
-  //   axios
-  //     .get<{
-  //       data: {
-  //         projectId: string;
-  //         nodes: GraphSnapshot['nodes']['nodes'];
-  //         edges: GraphSnapshot['edges']['edges'];
-  //       }[];
-  //     }>(`https://platform-api.sens-vn.com/graph/${param.id}`)
-  //     .then((data) => data.data.data.find((item) => item.projectId === param.id)),
-  // );
+
   const [translate, setTranslate] = useTranslate;
   const [scale, setScale] = useScale;
-
-  // createEffect(() => {
-  //   if (!data()) return;
-
-  //   graph.useSnapshot({
-  //     edges: { edges: data().edges },
-  //     nodes: { nodes: data().nodes },
-  //   });
-  // });
-
-  // let debounce: any;
-  // createEffect(() => {
-  //   const newEdges = graph.edges.edges;
-  //   const newNodes = graph.nodes.nodes.map((node) => node.takeSnapshot());
-  //   if (graph.history.length === 0) return;
-
-  //   clearTimeout(debounce);
-  //   debounce = setTimeout(
-  //     () =>
-  //       axios.patch(`https://platform-api.sens-vn.com/graph/${params.id}`, {
-  //         edges: newEdges,
-  //         nodes: newNodes,
-  //       }),
-  //     3000,
-  //   );
-  // });
 
   const wheelCallback = (e: WheelEvent) => {
     if (e.ctrlKey) {
